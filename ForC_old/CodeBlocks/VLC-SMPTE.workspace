@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="Workspace">
+		<Project filename="Smpte-2022-.cbp" active="1" />
+		<Project filename="FecGenerator.cbp">
+			<Depends filename="Smpte-2022-.cbp" />
+		</Project>
+		<Project filename="ErrorsGenerator.cbp">
+			<Depends filename="Smpte-2022-.cbp" />
+		</Project>
+		<Project filename="FecDecoder.cbp" />
+		<Project filename="OldSimulator.cbp">
+			<Depends filename="Smpte-2022-.cbp" />
+		</Project>
+	</Workspace>
+</CodeBlocks_workspace_file>

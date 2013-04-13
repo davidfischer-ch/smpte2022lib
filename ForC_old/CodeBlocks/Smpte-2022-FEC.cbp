@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Smpte-2022-" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="../Debug/libSmpte-2022-" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="../Debug" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-Wmain" />
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="../Release/libSmpte-2022-" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="../Release" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O2" />
+					<Add option="-Wmain" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Unit filename="../Code/algo_structs/sBufferFec.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../Code/algo_structs/sBufferFec.h" />
+		<Unit filename="../Code/algo_structs/sBufferMedia.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../Code/algo_structs/sBufferMedia.h" />
+		<Unit filename="../Code/algo_structs/sCrossFec.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../Code/algo_structs/sCrossFec.h" />
+		<Unit filename="../Code/algo_structs/sPaquetFec.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../Code/algo_structs/sPaquetFec.h" />
+		<Unit filename="../Code/algo_structs/sPaquetMedia.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../Code/algo_structs/sPaquetMedia.h" />
+		<Unit filename="../Code/algo_structs/sSeqNx.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../Code/algo_structs/sSeqNx.h" />
+		<Unit filename="../Code/algo_structs/sWaitFec.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../Code/algo_structs/sWaitFec.h" />
+		<Unit filename="../Code/algorithmes/sBruteSmpte.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../Code/algorithmes/sBruteSmpte.h" />
+		<Unit filename="../Code/algorithmes/sDavidSmpte.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../Code/algorithmes/sDavidSmpte.h" />
+		<Unit filename="../Code/common/console.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../Code/common/console.h" />
+		<Unit filename="../Code/common/macros.h" />
+		<Unit filename="../Code/common/messages.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../Code/common/messages.h" />
+		<Unit filename="../Code/common/project_types.h" />
+		<Unit filename="../Code/common/types.h" />
+		<Unit filename="../Code/data_structs/sChampBits.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../Code/data_structs/sChampBits.h" />
+		<Unit filename="../Code/data_structs/sLinkedList.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../Code/data_structs/sLinkedList.h" />
+		<Unit filename="../Code/data_structs/sRbTree.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../Code/data_structs/sRbTree.h" />
+		<Unit filename="../Code/data_structs/sRbTree_helpers.h" />
+		<Unit filename="../Code/smpte.h" />
+		<Unit filename="../Code/utilities/sTewfiq.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../Code/utilities/sTewfiq.h" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

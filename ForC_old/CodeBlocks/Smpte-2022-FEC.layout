@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Release" />
+	<File name="../Code/algo_structs/sBufferFec.c" open="1" top="0" tabpos="4">
+		<Cursor position="207" topLine="0" />
+	</File>
+	<File name="../Code/algo_structs/sBufferFec.h" open="1" top="0" tabpos="28">
+		<Cursor position="1921" topLine="26" />
+	</File>
+	<File name="../Code/algo_structs/sBufferMedia.c" open="1" top="0" tabpos="5">
+		<Cursor position="6329" topLine="155" />
+	</File>
+	<File name="../Code/algo_structs/sBufferMedia.h" open="1" top="0" tabpos="25">
+		<Cursor position="2918" topLine="28" />
+	</File>
+	<File name="../Code/algo_structs/sCrossFec.c" open="1" top="0" tabpos="6">
+		<Cursor position="227" topLine="0" />
+	</File>
+	<File name="../Code/algo_structs/sCrossFec.h" open="1" top="0" tabpos="29">
+		<Cursor position="1921" topLine="7" />
+	</File>
+	<File name="../Code/algo_structs/sPaquetFec.c" open="1" top="0" tabpos="7">
+		<Cursor position="7175" topLine="160" />
+	</File>
+	<File name="../Code/algo_structs/sPaquetFec.h" open="1" top="0" tabpos="23">
+		<Cursor position="4006" topLine="66" />
+	</File>
+	<File name="../Code/algo_structs/sPaquetMedia.c" open="1" top="0" tabpos="8">
+		<Cursor position="4788" topLine="94" />
+	</File>
+	<File name="../Code/algo_structs/sPaquetMedia.h" open="1" top="0" tabpos="30">
+		<Cursor position="1965" topLine="19" />
+	</File>
+	<File name="../Code/algo_structs/sSeqNx.c" open="1" top="0" tabpos="9">
+		<Cursor position="233" topLine="0" />
+	</File>
+	<File name="../Code/algo_structs/sSeqNx.h" open="1" top="0" tabpos="24">
+		<Cursor position="2601" topLine="29" />
+	</File>
+	<File name="../Code/algo_structs/sWaitFec.c" open="1" top="0" tabpos="10">
+		<Cursor position="219" topLine="0" />
+	</File>
+	<File name="../Code/algo_structs/sWaitFec.h" open="1" top="0" tabpos="31">
+		<Cursor position="1930" topLine="21" />
+	</File>
+	<File name="../Code/algorithmes/sBruteSmpte.c" open="1" top="0" tabpos="11">
+		<Cursor position="3551" topLine="74" />
+	</File>
+	<File name="../Code/algorithmes/sBruteSmpte.h" open="1" top="0" tabpos="26">
+		<Cursor position="2009" topLine="31" />
+	</File>
+	<File name="../Code/algorithmes/sDavidSmpte.c" open="1" top="0" tabpos="12">
+		<Cursor position="1719" topLine="12" />
+	</File>
+	<File name="../Code/algorithmes/sDavidSmpte.h" open="1" top="0" tabpos="22">
+		<Cursor position="3248" topLine="48" />
+	</File>
+	<File name="../Code/common/console.c" open="1" top="0" tabpos="21">
+		<Cursor position="3647" topLine="60" />
+	</File>
+	<File name="../Code/common/console.h" open="1" top="0" tabpos="19">
+		<Cursor position="4072" topLine="0" />
+	</File>
+	<File name="../Code/common/macros.h" open="1" top="0" tabpos="1">
+		<Cursor position="5558" topLine="125" />
+	</File>
+	<File name="../Code/common/messages.c" open="1" top="0" tabpos="3">
+		<Cursor position="192" topLine="0" />
+	</File>
+	<File name="../Code/common/messages.h" open="1" top="0" tabpos="2">
+		<Cursor position="210" topLine="0" />
+	</File>
+	<File name="../Code/common/project_types.h" open="1" top="0" tabpos="35">
+		<Cursor position="215" topLine="0" />
+	</File>
+	<File name="../Code/common/types.h" open="1" top="0" tabpos="34">
+		<Cursor position="213" topLine="0" />
+	</File>
+	<File name="../Code/data_structs/sChampBits.c" open="1" top="0" tabpos="13">
+		<Cursor position="220" topLine="0" />
+	</File>
+	<File name="../Code/data_structs/sChampBits.h" open="1" top="0" tabpos="32">
+		<Cursor position="220" topLine="0" />
+	</File>
+	<File name="../Code/data_structs/sLinkedList.c" open="1" top="0" tabpos="14">
+		<Cursor position="213" topLine="0" />
+	</File>
+	<File name="../Code/data_structs/sLinkedList.h" open="1" top="0" tabpos="33">
+		<Cursor position="1135" topLine="0" />
+	</File>
+	<File name="../Code/data_structs/sRbTree.c" open="1" top="0" tabpos="15">
+		<Cursor position="2813" topLine="45" />
+	</File>
+	<File name="../Code/data_structs/sRbTree.h" open="1" top="0" tabpos="20">
+		<Cursor position="1788" topLine="8" />
+	</File>
+	<File name="../Code/data_structs/sRbTree_helpers.h" open="1" top="0" tabpos="27">
+		<Cursor position="491" topLine="0" />
+	</File>
+	<File name="../Code/smpte.h" open="1" top="0" tabpos="18">
+		<Cursor position="5023" topLine="97" />
+	</File>
+	<File name="../Code/utilities/sTewfiq.c" open="1" top="0" tabpos="16">
+		<Cursor position="1218" topLine="3" />
+	</File>
+	<File name="../Code/utilities/sTewfiq.h" open="1" top="0" tabpos="17">
+		<Cursor position="207" topLine="0" />
+	</File>
+</CodeBlocks_layout_file>

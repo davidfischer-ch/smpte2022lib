@@ -1,0 +1,324 @@
+*** ../vlc/modules/access/rtp/session.c	2011-09-21 11:49:12.337919517 +0200
+--- DIFF_VLC/Last_Version/session.c	2011-11-21 12:20:37.632111571 +0100
+***************
+*** 4,9 ****
+--- 4,10 ----
+   */
+  /*****************************************************************************
+   * Copyright © 2008 Rémi Denis-Courmont
++  * Modified, Copyright © 2011 Jérémie Rossier
+   *
+   * This library is free software; you can redistribute it and/or
+   * modify it under the terms of the GNU General Public License
+***************
+*** 32,37 ****
+--- 33,39 ----
+  #include <vlc_demux.h>
+  
+  #include "rtp.h"
++ #include "smpte2022.h"
+  
+  typedef struct rtp_source_t rtp_source_t;
+  
+***************
+*** 136,141 ****
+--- 138,147 ----
+  /** State for an RTP source */
+  struct rtp_source_t
+  {
++ 
++     /* SMPTE2022 Struct */
++     sDavidSmpte_t *smpte2022;
++ 
+      uint32_t ssrc;
+      uint32_t jitter;  /* interarrival delay jitter estimate */
+      mtime_t  last_rx; /* last received packet local timestamp */
+***************
+*** 161,167 ****
+  {
+      rtp_source_t *source;
+  
+!     source = malloc (sizeof (*source) + (sizeof (void *) * session->ptc));
+      if (source == NULL)
+          return NULL;
+  
+--- 167,173 ----
+  {
+      rtp_source_t *source;
+  
+!     source = malloc (sizeof (*source) + (sizeof (void *) * (session->ptc + 1 )));
+      if (source == NULL)
+          return NULL;
+  
+***************
+*** 178,183 ****
+--- 184,192 ----
+      for (unsigned i = 0; i < session->ptc; i++)
+          source->opaque[i] = session->ptv[i].init (demux);
+  
++     /* Initialize SMPTE2022 */
++     source->smpte2022 = sDavidSmpte_New ();
++ 
+      msg_Dbg (demux, "added RTP source (%08x)", ssrc);
+      return source;
+  }
+***************
+*** 195,200 ****
+--- 204,213 ----
+      for (unsigned i = 0; i < session->ptc; i++)
+          session->ptv[i].destroy (demux, source->opaque[i]);
+      block_ChainRelease (source->blocks);
++     /* free smpte2022 struct */
++     sDavidSmpte_Release(source->smpte2022);
++     free (source->smpte2022);
++ 
+      free (source);
+  }
+  
+***************
+*** 234,242 ****
+   * @param demux VLC demux object
+   * @param session RTP session receiving the packet
+   * @param block RTP packet including the RTP header
+   */
+  void
+! rtp_queue (demux_t *demux, rtp_session_t *session, block_t *block)
+  {
+      demux_sys_t *p_sys = demux->p_sys;
+  
+--- 247,256 ----
+   * @param demux VLC demux object
+   * @param session RTP session receiving the packet
+   * @param block RTP packet including the RTP header
++  * @param SMPTE2022 Boolean to differenciate arrived and recovered packet
+   */
+  void
+! rtp_queue (demux_t *demux, rtp_session_t *session, block_t *block, bool smpte2022_newblock)
+  {
+      demux_sys_t *p_sys = demux->p_sys;
+  
+***************
+*** 368,373 ****
+--- 382,391 ----
+      block->p_next = *pp;
+      *pp = block;
+  
++     if (smpte2022_newblock) /*SMPTE2022 Arrived media paquet */
++         sDavidSmpte_ArriveePaquetMedia_Convert(demux, src->smpte2022, block);
++     else msg_Warn (demux, "reconstructed media put into queue %"PRIu8" ", seq);
++ 
+      /*rtp_decode (demux, session, src);*/
+      return;
+  
+***************
+*** 375,380 ****
+--- 393,448 ----
+      block_Release (block);
+  }
+  
++ /**
++  * Receives an RTP SMPTE2022 FEC packet and queues it in SMPTE2022
++  *
++  * @param demux VLC demux object
++  * @param session RTP session receiving the packet
++  * @param block RTP packet including the RTP header
++  */
++ void
++ rtp_smpte2022_fec_queue (demux_t *demux, rtp_session_t *session, block_t *block)
++ {
++     /* RTP header sanity checks (see RFC 3550) */
++     if (block->i_buffer < 12)
++         return;
++     if ((block->p_buffer[0] >> 6 ) != 2) /* RTP version number */
++         return;
++     if (session->srcc != 1) /*no RTP source already */
++         return;
++ 
++     //wait a little, because FEC paquet process faster than MEDIA paquet
++     // and last protected MEDIA paquet is interpreted as lost, 
++     // almost he arrived 20-50 microsecond after ->TODO mwait depend of jitter
++     mwait(mdate()+100);
++ 
++     sDavidSmpte_ArriveePaquetFec_Convert (demux, session->srcv[0]->smpte2022, block);
++ }
++ 
++ 
++ /**
++  * Receives a recover RTP Media packet from Algorithm SMPTE2022 and queues it in RTP queue
++  *
++  * @param demux VLC demux object
++  * @param block RTP packet including the RTP header
++  */
++ void
++ rtp_smpte2022_media_queue (demux_t *demux, block_t *block)
++ {
++     demux_sys_t *sys = demux->p_sys;
++ 
++     if (block->i_buffer < 2)
++         goto drop;
++     const uint8_t ptype = rtp_ptype (block);
++     if (ptype >= 72 && ptype <= 76)
++         goto drop; /* Muxed RTCP, ignore for now FIXME */
++ 
++     rtp_queue (demux, sys->session, block, false);
++     return;
++ drop:
++     block_Release (block);
++ }
++ 
+  
+  static void rtp_decode (demux_t *, const rtp_session_t *, rtp_source_t *);
+  
+***************
+*** 403,408 ****
+--- 471,487 ----
+          rtp_source_t *src = session->srcv[i];
+          block_t *block;
+  
++         /*SMPTE2022 resize the matrix */
++         if (!(src->smpte2022->resized_matrix))
++         {
++             if (src->smpte2022->resized_matrix_check - (now+1000000) <= 0)
++             {
++                 demux->p_sys->smpte2022_matrix_size = 10;
++                 src->smpte2022->resized_matrix = true;
++                 msg_Dbg(demux, "SMPTE2022 Matrix change size %"PRIu16" ",demux->p_sys->smpte2022_matrix_size);
++             }
++         }
++ 
+          /* Because of IP packet delay variation (IPDV), we need to guesstimate
+           * how long to wait for a missing packet in the RTP sequence
+           * (see RFC3393 for background on IPDV).
+***************
+*** 421,461 ****
+           */
+          while (((block = src->blocks)) != NULL)
+          {
+!             if ((int16_t)(rtp_seq (block) - (src->last_seq + 1)) <= 0)
+!             {   /* Next (or earlier) block ready, no need to wait */
+!                 rtp_decode (demux, session, src);
+!                 continue;
+!             }
+  
+              /* Wait for 3 times the inter-arrival delay variance (about 99.7%
+               * match for random gaussian jitter).
+               */
+!             mtime_t deadline;
+!             const rtp_pt_t *pt = rtp_find_ptype (session, src, block, NULL);
+!             if (pt)
+!                 deadline = CLOCK_FREQ * 3 * src->jitter / pt->frequency;
+!             else
+!                 deadline = 0; /* no jitter estimate with no frequency :( */
+  
+              /* Make sure we wait at least for 25 msec */
+!             if (deadline < (CLOCK_FREQ / 40))
+!                 deadline = CLOCK_FREQ / 40;
+  
+              /* Additionnaly, we implicitly wait for the packetization time
+               * multiplied by the number of missing packets. block is the first
+               * non-missing packet (lowest sequence number). We have no better
+               * estimated time of arrival, as we do not know the RTP timestamp
+               * of not yet received packets. */
+!             deadline += block->i_pts;
+!             if (now >= deadline)
+!             {
+!                 rtp_decode (demux, session, src);
+                  continue;
+              }
+              if (*deadlinep > deadline)
+                  *deadlinep = deadline;
+              pending = true; /* packet pending in buffer */
+              break;
+          }
+      }
+      return pending;
+--- 500,557 ----
+           */
+          while (((block = src->blocks)) != NULL)
+          {
+! //            if ((int16_t)(rtp_seq (block) - (src->last_seq + 1)) <= 0)
+! //            {   /* Next (or earlier) block ready, no need to wait */
+! //		msg_Dbg(demux, "dequeue packet (sequence: %"PRIu16")",rtp_seq (block));
+! //                rtp_decode (demux, session, src);   
+! //                continue;
+! //            }
+  
+              /* Wait for 3 times the inter-arrival delay variance (about 99.7%
+               * match for random gaussian jitter).
+               */
+! //            mtime_t deadline;
+! //            const rtp_pt_t *pt = rtp_find_ptype (session, src, block, NULL);
+! //            if (pt)
+! //                deadline = CLOCK_FREQ * 3 * src->jitter / pt->frequency;
+! //            else
+! //                deadline = 0; /* no jitter estimate with no frequency :( */
+  
+              /* Make sure we wait at least for 25 msec */
+! //            if (deadline < (CLOCK_FREQ / 40))
+! //                deadline = CLOCK_FREQ / 40;
+  
+              /* Additionnaly, we implicitly wait for the packetization time
+               * multiplied by the number of missing packets. block is the first
+               * non-missing packet (lowest sequence number). We have no better
+               * estimated time of arrival, as we do not know the RTP timestamp
+               * of not yet received packets. */
+! //            deadline += block->i_pts;
+! //            if (now >= deadline)
+! //            {
+! //                rtp_decode (demux, session, src);
+! //                continue;
+! //            }
+! //            if (*deadlinep > deadline)
+! //                *deadlinep = deadline;
+! //            pending = true; /* packet pending in buffer */
+! //            break;
+! 
+!             /*TEST ROSSIER
+!             * Queue packet must be in window L*D
+!             */
+! 	    if ( (int16_t)(rtp_seq(block) - (src->max_seq - demux->p_sys->smpte2022_matrix_size)) <= 0)
+!             {   /* Next (or earlier) block ready, no need to wait */
+!                 //block->i_pts = now+100000;
+!                 rtp_decode (demux, session, src);  
+                  continue;
+              }
+              if (*deadlinep > deadline)
+                  *deadlinep = deadline;
+              pending = true; /* packet pending in buffer */
+              break;
++             //END TEST ROSSIER
++ 
+          }
+      }
+      return pending;
+***************
+*** 488,493 ****
+--- 584,594 ----
+      assert (block);
+      src->blocks = block->p_next;
+      block->p_next = NULL;
++   
++    /*SMPTE2022 delete from struct pointer to block */
++    assert (block->i_buffer >= 4);
++    uint16_t _Seq =  GetWBE (block->p_buffer + 2);
++    bool _2022OK = sDavidSmpte_LecturePaquetMedia (demux,src->smpte2022, _Seq);
+  
+      /* Discontinuity detection */
+      uint16_t delta_seq = rtp_seq (block) - (src->last_seq + 1);
+***************
+*** 499,505 ****
+                        rtp_seq (block));
+              goto drop;
+          }
+!         msg_Warn (demux, "%"PRIu16" packet(s) lost", delta_seq);
+          block->i_flags |= BLOCK_FLAG_DISCONTINUITY;
+      }
+      src->last_seq = rtp_seq (block);
+--- 600,606 ----
+                        rtp_seq (block));
+              goto drop;
+          }
+!         msg_Warn (demux, "%"PRIu16" packet(s) lost : %"PRIu16" ", delta_seq, (rtp_seq(block)-1));
+          block->i_flags |= BLOCK_FLAG_DISCONTINUITY;
+      }
+      src->last_seq = rtp_seq (block);

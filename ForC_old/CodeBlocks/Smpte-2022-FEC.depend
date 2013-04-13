@@ -1,0 +1,114 @@
+# depslib dependency file v1.0
+1252339249 source:/home/david/Checkout/hepia/VLC-SMPTE/Code/algo_structs/sBufferFec.c
+	"../smpte.h"
+
+1291114629 /home/david/Checkout/hepia/VLC-SMPTE/Code/smpte.h
+	"common/types.h"
+	<time.h>
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<unistd.h>
+	<memory.h>
+	<math.h>
+	<assert.h>
+	<windows.h>
+	"common/macros.h"
+	"common/console.h"
+	"common/messages.h"
+	"common/project_types.h"
+
+1252339250 /home/david/Checkout/hepia/VLC-SMPTE/Code/common/types.h
+
+1252339249 /home/david/Checkout/hepia/VLC-SMPTE/Code/common/macros.h
+
+1291114993 /home/david/Checkout/hepia/VLC-SMPTE/Code/common/console.h
+
+1252339249 /home/david/Checkout/hepia/VLC-SMPTE/Code/common/messages.h
+
+1252339250 /home/david/Checkout/hepia/VLC-SMPTE/Code/common/project_types.h
+	"../data_structs/sChampBits.h"
+	"../data_structs/sLinkedList.h"
+	"../data_structs/sRbTree.h"
+	"../utilities/sTewfiq.h"
+	"../algo_structs/sSeqNx.h"
+	"../algo_structs/sCrossFec.h"
+	"../algo_structs/sPaquetFec.h"
+	"../algo_structs/sWaitFec.h"
+	"../algo_structs/sPaquetMedia.h"
+	"../algo_structs/sBufferFec.h"
+	"../algo_structs/sBufferMedia.h"
+	"../algorithmes/sBruteSmpte.h"
+	"../algorithmes/sDavidSmpte.h"
+
+1252339250 /home/david/Checkout/hepia/VLC-SMPTE/Code/data_structs/sChampBits.h
+
+1252339250 /home/david/Checkout/hepia/VLC-SMPTE/Code/data_structs/sLinkedList.h
+
+1252339385 /home/david/Checkout/hepia/VLC-SMPTE/Code/data_structs/sRbTree.h
+
+1252339250 /home/david/Checkout/hepia/VLC-SMPTE/Code/utilities/sTewfiq.h
+
+1252339250 /home/david/Checkout/hepia/VLC-SMPTE/Code/algo_structs/sSeqNx.h
+
+1252339250 /home/david/Checkout/hepia/VLC-SMPTE/Code/algo_structs/sCrossFec.h
+
+1252339250 /home/david/Checkout/hepia/VLC-SMPTE/Code/algo_structs/sPaquetFec.h
+
+1252339250 /home/david/Checkout/hepia/VLC-SMPTE/Code/algo_structs/sWaitFec.h
+
+1291125998 /home/david/Checkout/hepia/VLC-SMPTE/Code/algo_structs/sPaquetMedia.h
+
+1252339250 /home/david/Checkout/hepia/VLC-SMPTE/Code/algo_structs/sBufferFec.h
+
+1252339250 /home/david/Checkout/hepia/VLC-SMPTE/Code/algo_structs/sBufferMedia.h
+
+1252339250 /home/david/Checkout/hepia/VLC-SMPTE/Code/algorithmes/sBruteSmpte.h
+
+1291125965 /home/david/Checkout/hepia/VLC-SMPTE/Code/algorithmes/sDavidSmpte.h
+
+1252339249 source:/home/david/Checkout/hepia/VLC-SMPTE/Code/algo_structs/sBufferMedia.c
+	"../smpte.h"
+
+1252339249 source:/home/david/Checkout/hepia/VLC-SMPTE/Code/algo_structs/sCrossFec.c
+	"../smpte.h"
+
+1252339249 source:/home/david/Checkout/hepia/VLC-SMPTE/Code/algo_structs/sPaquetFec.c
+	"../smpte.h"
+
+1252339249 source:/home/david/Checkout/hepia/VLC-SMPTE/Code/algo_structs/sSeqNx.c
+	"../smpte.h"
+
+1252339249 source:/home/david/Checkout/hepia/VLC-SMPTE/Code/algo_structs/sWaitFec.c
+	"../smpte.h"
+
+1252339249 source:/home/david/Checkout/hepia/VLC-SMPTE/Code/algorithmes/sDavidSmpte.c
+	"../smpte.h"
+
+1252339250 source:/home/david/Checkout/hepia/VLC-SMPTE/Code/common/console.c
+	"../smpte.h"
+
+1252339249 source:/home/david/Checkout/hepia/VLC-SMPTE/Code/common/messages.c
+	"../smpte.h"
+
+1252339249 source:/home/david/Checkout/hepia/VLC-SMPTE/Code/data_structs/sChampBits.c
+	"../smpte.h"
+
+1252339249 source:/home/david/Checkout/hepia/VLC-SMPTE/Code/data_structs/sLinkedList.c
+	"../smpte.h"
+
+1252339385 source:/home/david/Checkout/hepia/VLC-SMPTE/Code/data_structs/sRbTree.c
+	"../smpte.h"
+	"sRbTree_helpers.h"
+
+1252339385 /home/david/Checkout/hepia/VLC-SMPTE/Code/data_structs/sRbTree_helpers.h
+
+1252339250 source:/home/david/Checkout/hepia/VLC-SMPTE/Code/utilities/sTewfiq.c
+	"../smpte.h"
+
+1291125998 source:/home/david/Checkout/hepia/VLC-SMPTE/Code/algo_structs/sPaquetMedia.c
+	"../smpte.h"
+
+1305623069 source:/home/david/Checkout/hepia/VLC-SMPTE/Code/algorithmes/sBruteSmpte.c
+	"../smpte.h"
+

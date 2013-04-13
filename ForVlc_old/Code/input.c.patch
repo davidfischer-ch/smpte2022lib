@@ -1,0 +1,152 @@
+*** ../vlc/modules/access/rtp/input.c	2011-11-14 12:36:32.155771063 +0100
+--- DIFF_VLC/Last_Version/input.c	2011-11-21 12:20:37.622111571 +0100
+***************
+*** 4,9 ****
+--- 4,10 ----
+   */
+  /*****************************************************************************
+   * Copyright © 2008 Rémi Denis-Courmont
++  * Modified, Copyright © 2011 Jérémie Rossier
+   *
+   * This library is free software; you can redistribute it and/or
+   * modify it under the terms of the GNU Lesser General Public License
+***************
+*** 40,45 ****
+--- 41,48 ----
+  # include <srtp.h>
+  #endif
+  
++ #include "smpte2022.h"
++ 
+  /**
+   * Processes a packet received from the RTP socket.
+   */
+***************
+*** 73,79 ****
+          sys->autodetect = false;
+      }
+  
+!     rtp_queue (demux, sys->session, block);
+      return;
+  drop:
+      block_Release (block);
+--- 76,102 ----
+          sys->autodetect = false;
+      }
+  
+!     rtp_queue (demux, sys->session, block, true);
+!     return;
+! drop:
+!     block_Release (block);
+! }
+! 
+! /**
+!  * Processes a smpte2022 packet received from the RTP socket.
+!  */
+! static void rtp_smpte2022_process (demux_t *demux, block_t *block)
+! {
+!     demux_sys_t *sys = demux->p_sys;
+! 
+!     if (block->i_buffer < 2)
+!         goto drop;
+!     const uint8_t ptype = rtp_ptype (block);
+!     if (ptype != 96) /* smpte2022 use dynamic ptype 96 in decimal */
+!         goto drop;
+!     if (sys->session == NULL)
+!         goto drop;
+!     rtp_smpte2022_fec_queue (demux, sys->session, block);
+      return;
+  drop:
+      block_Release (block);
+***************
+*** 192,194 ****
+--- 215,303 ----
+  #endif
+      return NULL;
+  }
++ 
++ /**
++  * SMPTE2022 RTP session thread for datagram sockets
++  */
++ void *rtp_smpte2022_dgram_thread (void *opaque)
++ {
++     demux_t *demux = opaque;
++     demux_sys_t *sys = demux->p_sys;
++     mtime_t deadline = VLC_TS_INVALID;
++ //    msg_Dbg (demux, "SMPTE2022 thread on");
++     int smpte2022_row_fd = sys->smpte2022_row_fd;
++     int smpte2022_col_fd = sys->smpte2022_col_fd;
++ 
++     struct pollfd ufd[2];
++     ufd[0].fd = smpte2022_row_fd;
++     ufd[0].events = POLLIN;
++     ufd[1].fd = smpte2022_col_fd;
++     ufd[1].events = POLLIN;
++ 
++     for (;;)
++     {
++         int n = poll (ufd, sizeof (ufd) / sizeof (ufd[0]), rtp_timeout (deadline));
++         if (n == -1)
++             continue;
++ 
++         int canc = vlc_savecancel ();
++         if (n == 0)
++             goto dequeue;
++ 
++         /* SMPTE2022 ROW FEC */
++         if (ufd[0].revents)
++         {
++             n--;
++             if (unlikely(ufd[0].revents & POLLHUP))
++                 break; /* RTP socket dead (DCCP only) */
++ 
++             block_t *block = block_Alloc (0xffff); /* TODO: p_sys->mru */
++             if (unlikely(block == NULL))
++                 break; /* we are totallly screwed */
++ 
++             ssize_t len = recv (smpte2022_row_fd, block->p_buffer, block->i_buffer, 0);
++             if (len != -1)
++             {
++                 block->i_buffer = len;
++                 //SMPTEPROCESS
++                 rtp_smpte2022_process (demux, block);
++                 block_Release (block);
++             }
++             else
++             {
++                 msg_Warn (demux, "RTP network error: %m");
++                 block_Release (block);
++             }
++         }
++ 
++         /* SMPTE2022 COLUMN FEC */
++         if (ufd[1].revents)
++         {
++             n--;
++             if (unlikely(ufd[1].revents & POLLHUP))
++                 break; /* RTP socket dead (DCCP only) */
++ 
++             block_t *block = block_Alloc (0xffff); /* TODO: p_sys->mru */
++             if (unlikely(block == NULL))
++                 break; /* we are totallly screwed */
++ 
++             ssize_t len = recv (smpte2022_col_fd, block->p_buffer, block->i_buffer, 0);
++             if (len != -1)
++             {
++                 block->i_buffer = len;
++                 //SMPTEPROCESS
++                 rtp_smpte2022_process (demux, block);
++                 block_Release (block);
++             }
++             else
++             {
++                 msg_Warn (demux, "RTP network error: %m");
++                 block_Release (block);
++             }
++         }
++ 
++     dequeue:
++         vlc_restorecancel (canc);
++     }
++     return NULL;
++ }

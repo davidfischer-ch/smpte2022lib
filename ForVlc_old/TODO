@@ -1,0 +1,12 @@
+Global :
+- Add option to enable or disable SMPTE2022 module (by default disable)
+- Add mutex to be sure no concurrent access to RTP queue
+
+smpte2022algorithm.c/.h :
+- merge function sDavidSmpte_ArriveePaquetMedia_Convert + sDavidSmpte_ArriveePaquetMedia
+- merge function sDavidSmpte_ArriveePaquetFec_Convert + sDavidSmpte_ArriveePaquetFec
+
+session.c :
+- rtp_smpte2022_fec_queue() : mwait change to depend of frequency + jitter, not absolute time
+
+Jérémie Rossier 2011

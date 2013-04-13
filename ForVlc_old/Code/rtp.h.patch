@@ -1,0 +1,72 @@
+*** ../vlc/modules/access/rtp/rtp.h	2011-11-14 12:36:32.155771063 +0100
+--- DIFF_VLC/Last_Version/rtp.h	2011-11-21 12:20:37.632111571 +0100
+***************
+*** 4,9 ****
+--- 4,10 ----
+   */
+  /*****************************************************************************
+   * Copyright © 2008 Rémi Denis-Courmont
++  * Modified, Copyright © 2011 Jérémie Rossier
+   *
+   * This library is free software; you can redistribute it and/or
+   * modify it under the terms of the GNU General Public License
+***************
+*** 32,38 ****
+      uint32_t  frequency; /* RTP clock rate (Hz) */
+      uint8_t   number;
+  };
+! void rtp_autodetect (demux_t *, rtp_session_t *, const block_t *);
+  
+  static inline uint8_t rtp_ptype (const block_t *block)
+  {
+--- 33,39 ----
+      uint32_t  frequency; /* RTP clock rate (Hz) */
+      uint8_t   number;
+  };
+! int rtp_autodetect (demux_t *, rtp_session_t *, const block_t *);
+  
+  static inline uint8_t rtp_ptype (const block_t *block)
+  {
+***************
+*** 50,61 ****
+  /** @section RTP session */
+  rtp_session_t *rtp_session_create (demux_t *);
+  void rtp_session_destroy (demux_t *, rtp_session_t *);
+! void rtp_queue (demux_t *, rtp_session_t *, block_t *);
+  bool rtp_dequeue (demux_t *, const rtp_session_t *, mtime_t *);
+  void rtp_dequeue_force (demux_t *, const rtp_session_t *);
+  int rtp_add_type (demux_t *demux, rtp_session_t *ses, const rtp_pt_t *pt);
+  
+  void *rtp_dgram_thread (void *data);
+  void *rtp_stream_thread (void *data);
+  
+  /* Global data */
+--- 51,65 ----
+  /** @section RTP session */
+  rtp_session_t *rtp_session_create (demux_t *);
+  void rtp_session_destroy (demux_t *, rtp_session_t *);
+! void rtp_queue (demux_t *, rtp_session_t *, block_t *, bool);
+! void rtp_smpte2022_fec_queue (demux_t *, rtp_session_t *s, block_t *);
+! void rtp_smpte2022_media_queue(demux_t *, block_t *);
+  bool rtp_dequeue (demux_t *, const rtp_session_t *, mtime_t *);
+  void rtp_dequeue_force (demux_t *, const rtp_session_t *);
+  int rtp_add_type (demux_t *demux, rtp_session_t *ses, const rtp_pt_t *pt);
+  
+  void *rtp_dgram_thread (void *data);
++ void *rtp_smpte2022_dgram_thread (void *data);
+  void *rtp_stream_thread (void *data);
+  
+  /* Global data */
+***************
+*** 67,72 ****
+--- 71,80 ----
+  #endif
+      int           fd;
+      int           rtcp_fd;
++     int           smpte2022_row_fd;
++     int           smpte2022_col_fd;
++     uint16_t      smpte2022_matrix_size;
++     vlc_thread_t  smpte2022_thread;
+      vlc_thread_t  thread;
+  
+      mtime_t       timeout;

@@ -1,0 +1,23 @@
+*** ../vlc/modules/access/rtp/Modules.am	2011-09-21 11:48:42.347919529 +0200
+--- DIFF_VLC/Last_Version/Modules.am	2011-11-21 12:20:37.622111571 +0100
+***************
+*** 6,11 ****
+--- 6,23 ----
+  	rtp.h \
+  	input.c \
+  	session.c \
++ 	smpte2022.h \
++ 	smpte2022algorithm.c \
++ 	smpte2022algorithm.h \
++ 	smpte2022fec.c \
++ 	smpte2022fec.h \
++ 	smpte2022media.c \
++ 	smpte2022media.h \
++ 	smpte2022tools.c \
++ 	smpte2022tools.h \
++ 	sRbTree_helpers.h \
++ 	sRbTree.c \
++ 	sRbTree.h \
+  	xiph.c
+  librtp_plugin_la_CFLAGS = $(AM_CFLAGS)
+  librtp_plugin_la_LIBADD = $(AM_LIBADD) $(SOCKET_LIBS)

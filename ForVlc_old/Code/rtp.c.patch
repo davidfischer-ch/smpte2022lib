@@ -1,0 +1,192 @@
+*** ../vlc/modules/access/rtp/rtp.c	2011-11-14 12:36:32.155771063 +0100
+--- DIFF_VLC/Last_Version/rtp.c	2011-11-21 12:20:37.622111571 +0100
+***************
+*** 5,10 ****
+--- 5,11 ----
+  /*****************************************************************************
+   * Copyright (C) 2001-2005 the VideoLAN team
+   * Copyright © 2007-2009 Rémi Denis-Courmont
++  * Modified, Copyright © 2011 Jérémie Rossier
+   *
+   * This library is free software; you can redistribute it and/or
+   * modify it under the terms of the GNU General Public License
+***************
+*** 80,85 ****
+--- 81,106 ----
+      "(between 96 and 127) if it can't be determined otherwise with " \
+      "out-of-band mappings (SDP)" )
+  
++ #define RTP_SMPTE2022ROW_ADDR_TEXT N_("SMPTE2022 RTP ROW Address")
++ #define RTP_SMPTE2022ROW_ADDR_LONGTEXT N_( \
++     "SMPTE2022 FEC ROW Address. " \
++     "If null, RTP Address is used.")
++ 
++ #define RTP_SMPTE2022COL_ADDR_TEXT N_("SMPTE2022 RTP COL Address")
++ #define RTP_SMPTE2022COL_ADDR_LONGTEXT N_( \
++     "SMPTE2022 FEC COL Address. " \
++     "If null, RTP Address is used.")
++ 
++ #define RTP_SMPTE2022ROW_PORT_TEXT N_("SMPTE2022 RTP ROW port")
++ #define RTP_SMPTE2022ROW_PORT_LONGTEXT N_( \
++     "SMPTE2022 FEC ROW port. " \
++     "If zero, RTPport+2 is used.")
++ 
++ #define RTP_SMPTE2022COL_PORT_TEXT N_("SMPTE2022 RTP COL port")
++ #define RTP_SMPTE2022COL_PORT_LONGTEXT N_( \
++     "SMPTE2022 FEC COL port. " \
++     "If zero, RTPport+4 is used.")
++ 
+  static const char *const dynamic_pt_list[] = { "theora" };
+  static const char *const dynamic_pt_list_text[] = { "Theora Encoded Video" };
+  
+***************
+*** 117,129 ****
+      add_integer ("rtp-max-dropout", 3000, RTP_MAX_DROPOUT_TEXT,
+                   RTP_MAX_DROPOUT_LONGTEXT, true)
+          change_integer_range (0, 32767)
+!     add_integer ("rtp-max-misorder", 100, RTP_MAX_MISORDER_TEXT,
+                   RTP_MAX_MISORDER_LONGTEXT, true)
+          change_integer_range (0, 32767)
+      add_string ("rtp-dynamic-pt", NULL, RTP_DYNAMIC_PT_TEXT,
+                  RTP_DYNAMIC_PT_LONGTEXT, true)
+          change_string_list (dynamic_pt_list, dynamic_pt_list_text, NULL)
+  
+      /*add_shortcut ("sctp")*/
+      add_shortcut ("dccp", "rtptcp", /* "tcp" is already taken :( */
+                    "rtp", "udplite")
+--- 138,162 ----
+      add_integer ("rtp-max-dropout", 3000, RTP_MAX_DROPOUT_TEXT,
+                   RTP_MAX_DROPOUT_LONGTEXT, true)
+          change_integer_range (0, 32767)
+!     add_integer ("rtp-max-misorder", 256, RTP_MAX_MISORDER_TEXT,
+                   RTP_MAX_MISORDER_LONGTEXT, true)
+          change_integer_range (0, 32767)
+      add_string ("rtp-dynamic-pt", NULL, RTP_DYNAMIC_PT_TEXT,
+                  RTP_DYNAMIC_PT_LONGTEXT, true)
+          change_string_list (dynamic_pt_list, dynamic_pt_list_text, NULL)
+  
++     /* SMPTE2022 Parameters */
++     add_string ("smpte2022-row-addr", "", RTP_SMPTE2022ROW_ADDR_TEXT,
++                  RTP_SMPTE2022ROW_ADDR_LONGTEXT, true)
++     add_integer ("smpte2022-row-port", 0, RTP_SMPTE2022ROW_PORT_TEXT,
++                  RTP_SMPTE2022ROW_PORT_LONGTEXT, true)
++         change_integer_range (0, 65535)
++     add_string ("smpte2022-col-addr", "", RTP_SMPTE2022COL_ADDR_TEXT,
++                  RTP_SMPTE2022COL_ADDR_LONGTEXT, true)
++     add_integer ("smpte2022-col-port", 0, RTP_SMPTE2022COL_PORT_TEXT,
++                  RTP_SMPTE2022COL_PORT_LONGTEXT, true)
++         change_integer_range (0, 65535)
++ 
+      /*add_shortcut ("sctp")*/
+      add_shortcut ("dccp", "rtptcp", /* "tcp" is already taken :( */
+                    "rtp", "udplite")
+***************
+*** 199,209 ****
+--- 232,257 ----
+          dport = extract_port (&dhost);
+      if (dport == 0)
+          dport = 5004; /* avt-profile-1 port */
++     /* SMPTE2022 port numbers*/
++     int dport_smpte2022_row = var_CreateGetInteger (obj, "smpte2022-row-port");
++     int dport_smpte2022_col = var_CreateGetInteger (obj, "smpte2022-col-port");
++     /* If value in Parameter's Interface are "0", use as specified in SMPTE2022 */
++     char *daddr_smpte2022_row = var_InheritString(demux, "smpte2022-row-addr");
++     char *daddr_smpte2022_col = var_InheritString(demux, "smpte2022-col-addr");
++     if (daddr_smpte2022_row == NULL)
++         daddr_smpte2022_row = dhost; /* default : RTP Address */
++     if (daddr_smpte2022_col == NULL)
++         daddr_smpte2022_col = dhost; /* default : RTP Address */
++     if (dport_smpte2022_row == 0)
++         dport_smpte2022_row = dport+2; /* default : RTPport+2 */
++     if (dport_smpte2022_col == 0)
++         dport_smpte2022_col = dport+4; /* default : RTPport+4 */
+  
+      int rtcp_dport = var_CreateGetInteger (obj, "rtcp-port");
+  
+      /* Try to connect */
+      int fd = -1, rtcp_fd = -1;
++     int smpte2022_row_fd = -1, smpte2022_col_fd = -1;/* SMPTE2022 Row + Column Dgram */
+  
+      switch (tp)
+      {
+***************
+*** 212,217 ****
+--- 260,273 ----
+              fd = net_OpenDgram (obj, dhost, dport, shost, sport, tp);
+              if (fd == -1)
+                  break;
++             /* SMPTE2022 FEC */
++             smpte2022_row_fd = net_OpenDgram (obj, daddr_smpte2022_row, dport_smpte2022_row, shost, sport, tp);
++             if (smpte2022_row_fd == -1)
++                 break;
++             smpte2022_col_fd = net_OpenDgram (obj, daddr_smpte2022_col, dport_smpte2022_col, shost, sport, tp);
++             if (smpte2022_col_fd == -1)
++                 break;
++             /* END SMPTE2022 FEC */
+              if (rtcp_dport > 0) /* XXX: source port is unknown */
+                  rtcp_fd = net_OpenDgram (obj, dhost, rtcp_dport, shost, 0, tp);
+              break;
+***************
+*** 246,251 ****
+--- 302,311 ----
+      if (p_sys == NULL)
+      {
+          net_Close (fd);
++         if (smpte2022_row_fd != -1)
++             net_Close (smpte2022_row_fd);
++         if (smpte2022_col_fd != -1)
++             net_Close (smpte2022_col_fd);
+          if (rtcp_fd != -1)
+              net_Close (rtcp_fd);
+          return VLC_EGENERIC;
+***************
+*** 256,261 ****
+--- 316,324 ----
+  #endif
+      p_sys->fd           = fd;
+      p_sys->rtcp_fd      = rtcp_fd;
++     p_sys->smpte2022_row_fd = smpte2022_row_fd;
++     p_sys->smpte2022_col_fd = smpte2022_col_fd;
++     p_sys->smpte2022_matrix_size = 256; //smpte2022 maximum normalized value, adapt later to matrix size
+      p_sys->max_src      = var_CreateGetInteger (obj, "rtp-max-src");
+      p_sys->timeout      = var_CreateGetInteger (obj, "rtp-timeout")
+                          * CLOCK_FREQ;
+***************
+*** 301,306 ****
+--- 364,375 ----
+                     (tp != IPPROTO_TCP) ? rtp_dgram_thread : rtp_stream_thread,
+                     demux, VLC_THREAD_PRIORITY_INPUT))
+          goto error;
++     /* Create SMPTE2022 thread */
++     if ( (tp == IPPROTO_UDP) || (tp == IPPROTO_UDPLITE) )
++ 	if (vlc_clone (&p_sys->smpte2022_thread, rtp_smpte2022_dgram_thread,
++                 demux, VLC_THREAD_PRIORITY_INPUT))
++            goto error;
++ 
+      p_sys->thread_ready = true;
+      return VLC_SUCCESS;
+  
+***************
+*** 322,327 ****
+--- 391,398 ----
+      {
+          vlc_cancel (p_sys->thread);
+          vlc_join (p_sys->thread, NULL);
++         vlc_cancel (p_sys->smpte2022_thread);
++         vlc_join (p_sys->smpte2022_thread, NULL);
+      }
+  
+  #ifdef HAVE_SRTP
+***************
+*** 332,337 ****
+--- 403,412 ----
+          rtp_session_destroy (demux, p_sys->session);
+      if (p_sys->rtcp_fd != -1)
+          net_Close (p_sys->rtcp_fd);
++     if (p_sys->smpte2022_row_fd != -1)
++         net_Close (p_sys->smpte2022_row_fd);
++     if (p_sys->smpte2022_col_fd != -1)
++         net_Close (p_sys->smpte2022_col_fd);
+      net_Close (p_sys->fd);
+      free (p_sys);
+  }
