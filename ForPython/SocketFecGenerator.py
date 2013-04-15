@@ -100,7 +100,7 @@ class SocketFecGenerator(object):
         log.info('started Listening %s' % self.media_socket)
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
-        sock.bind(('', self.media_socket['port']))
+        sock.bind((self.media_socket['ip'], self.media_socket['port']))
         # Tell the operating system to add the socket to the multicast group on all interfaces
         group = socket.inet_aton(self.media_socket['ip'])
         mreq = struct.pack('4sL', group, socket.INADDR_ANY)
