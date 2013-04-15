@@ -109,8 +109,8 @@ class SocketFecGenerator(object):
         while True:
             datagram, address = sock.recvfrom(1024)
             media = RtpPacket(bytearray(datagram), len(datagram))
-            log.debug('Incoming media packet seq=%s ts=%s psize=%s address=%s' %
-                      (media.sequence, media.timestamp, media.payload_size, address))
+            log.debug('Incoming media packet seq=%s ts=%s psize=%s ssrc=%s address=%s' %
+                      (media.sequence, media.timestamp, media.payload_size, media.ssrc, address))
             self._generator.putMedia(media)
 
     def onNewCol(self, col, generator):
