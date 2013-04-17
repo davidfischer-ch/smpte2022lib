@@ -106,7 +106,7 @@ def valid_filename(filename):
 
 def valid_secret(secret):
     try:
-        return re.match(r'[A-Za-z0-9@#$%^&+=]{8,}', secret)
+        return re.match(r'[A-Za-z0-9@#$%^&+=-_]{8,}', secret)
     except:
         return False
 
