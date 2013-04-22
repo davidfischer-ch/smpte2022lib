@@ -33,7 +33,7 @@
 #   David Fischer's Master Thesis, Open-Source Infrastructure for Encoding and Distribution
 
 from bson.json_util import dumps, loads
-import datetime
+from datetime import datetime
 import inspect
 from ipaddr import IPAddress
 import json
@@ -48,8 +48,29 @@ class ForbiddenError(Exception):
     pass
 
 
-def datetime_now():
-    return datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+def datetime_now(offset=None, format='%Y-%m-%d %H:%M:%S'):
+    u"""
+    Return the current UTC date and time.
+    If format is not None, the date will be returned in a formatted string.
+
+    :param offset: Offset added to datetime.utcnow() if set
+    :type offset: datetime.timedelta
+    :param format: Output date string formatting
+    :type format: str
+
+    **Example usage**:
+
+    >>> from datetime import timedelta
+    >>> now = datetime_now(format=None)
+    >>> future = datetime_now(offset=timedelta(hours=2, minutes=10), format=None)
+    >>> print future - now  # doctest: +ELLIPSIS
+    2:10:00...
+    >>> assert(isinstance(datetime_now(), str))
+    """
+    now = datetime.utcnow()
+    if offset:
+        now += offset
+    return now.strftime(format) if format else now
 
 
 ## http://stackoverflow.com/questions/6255387/mongodb-object-serialized-as-json
