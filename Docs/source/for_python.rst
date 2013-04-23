@@ -142,6 +142,14 @@ Code Documentation
     :private-members:
     :undoc-members:
 
+----
+
+.. automodule:: Utils
+    :members:
+    :inherited-members:
+    :private-members:
+    :undoc-members:
+
 .. seealso::
 
     * Documenting your project with Sphinx `(link) <http://pythonhosted.org/an_example_pypi_project/sphinx.html#full-code-example>`_
