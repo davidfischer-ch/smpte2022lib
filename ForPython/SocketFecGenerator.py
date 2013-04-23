@@ -92,12 +92,42 @@ class SocketFecGenerator(object):
         self._generator.onNewCol = self.onNewCol
         self._generator.onNewRow = self.onNewRow
         self._generator.onReset = self.onReset
+        self._running = False
+
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+    @property
+    def running(self):
+        u"""
+        Return True if FEC generator is running.
+        """
+        return self._running
 
     # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Functions >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-    def run(self):
+    def run(self, timeout):
+        u"""
+        Run FEC generator main loop.
+
+        .. note::
+
+            * Raise an exception if called when FEC generator is already running.
+            * If ``timeout`` is None then this method will uses blocking socket operations:
+                -> Stop requests may be never taken into account !
+
+        :param timeout: Set a timeout on blocking socket operations (in seconds, or None).
+        :type timeout: float
+
+        **Example usage**:
+
+        >>> print('TODO lazy developer !')
+        I've done the code, but not the example ... I will do it later ...
+        """
+        if self._running:
+            raise NotImplementedError('SMPTE 2022-1 FEC Generator already running')
+        self._running = True
         log.info('SMPTE 2022-1 FEC Generator by David Fischer')
-        log.info('started Listening %s' % self.media_socket)
+        log.info('Started listening %s' % self.media_socket)
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
         sock.bind((self.media_socket['ip'], self.media_socket['port']))
@@ -105,13 +135,26 @@ class SocketFecGenerator(object):
         group = socket.inet_aton(self.media_socket['ip'])
         mreq = struct.pack('4sL', group, socket.INADDR_ANY)
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
-        # Receive loop
-        while True:
-            datagram, address = sock.recvfrom(1024)
-            media = RtpPacket(bytearray(datagram), len(datagram))
-            log.debug('Incoming media packet seq=%s ts=%s psize=%s ssrc=%s address=%s' %
-                      (media.sequence, media.timestamp, media.payload_size, media.ssrc, address))
-            self._generator.putMedia(media)
+        sock.settimeout(timeout)  # Time-out must be enabled to react to stop requests
+        while self._running:      # Receive loop
+            try:
+                datagram, address = sock.recvfrom(1024)
+                media = RtpPacket(bytearray(datagram), len(datagram))
+                log.debug('Incoming media packet seq=%s ts=%s psize=%s ssrc=%s address=%s' %
+                         (media.sequence, media.timestamp, media.payload_size, media.ssrc, address))
+                self._generator.putMedia(media)
+            except socket.timeout:
+                pass  # Handle time-out by doing nothing more than re-looping
+        log.info('Stopped listening %s' % self.media_socket)
+
+    def stop(self):
+        u"""
+        Ask the FEC generator to stop.
+
+        The request will be taken into account by generator's main loop.
+        Polling interval correspond to ``run()`` ``timeout`` parameter.
+        """
+        self._running = False
 
     def onNewCol(self, col, generator):
         u"""
