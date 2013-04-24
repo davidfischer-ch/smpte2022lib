@@ -48,6 +48,10 @@ class ForbiddenError(Exception):
     pass
 
 
+def str2datetime(date, format='%Y-%m-%d %H:%M:%S'):
+    return datetime.strptime(date, format)
+
+
 def datetime_now(offset=None, format='%Y-%m-%d %H:%M:%S'):
     u"""
     Return the current UTC date and time.
