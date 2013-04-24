@@ -92,11 +92,20 @@ class SmartJSONEncoderV2(json.JSONEncoder):
 
 
 def json2object(json, something):
-    something.__dict__ = loads(json)
+    something.__dict__.update(loads(json))
 
 
-def jsonfile2object(filename, something):
-    something.__dict__ = json.load(open(filename))
+def jsonfile2object(filename_or_file, something=None):
+    if something is None:
+        try:
+            return json.load(open(filename_or_file))
+        except TypeError:
+            return json.load(filename_or_file)
+    else:
+        try:
+            something.__dict__.update(json.load(open(filename_or_file)))
+        except TypeError:
+            something.__dict__.update(json.load(filename_or_file))
 
 
 def object2json(something, include_properties):
