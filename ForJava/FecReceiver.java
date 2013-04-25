@@ -140,8 +140,8 @@ public class FecReceiver
 
 	public FecReceiver(BufferedOutputStream pOutPayload, ArrayList<RtpPacket> pOutMedias)
 	{
-		if (pOutPayload == null && outMedias == null)
-			throw new IllegalArgumentException("pOutPayload and outMedias are both null");
+		if (pOutPayload == null && pOutMedias == null)
+			throw new IllegalArgumentException("pOutPayload and pOutMedias are both null");
 		medias     = new TreeMap<Integer, RtpPacket>();
 		crosses    = new TreeMap<Integer, FecCross>();
 		cols       = new TreeMap<Integer, FecWait>();
@@ -348,7 +348,7 @@ public class FecReceiver
 		{
 			flushing = true;
 			out();
-			outPayload.flush();
+			if (outPayload != null) outPayload.flush();
 		}
 		finally
 		{
