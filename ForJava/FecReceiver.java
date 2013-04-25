@@ -109,7 +109,8 @@ public class FecReceiver
 	protected int matrixD; //. Detected FEC matrix size (number of rows)
 
 	// Output
-	protected BufferedOutputStream output; //. TODO
+	protected BufferedOutputStream outPayload; //. TODO
+	protected ArrayList<RtpPacket> outMedias;  //. TODO
 
 	// Settings
 	protected int        delayValue = 100;                //. RTP buffer delay value
@@ -137,15 +138,17 @@ public class FecReceiver
 
 	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructors >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-	public FecReceiver(BufferedOutputStream pOutput)
+	public FecReceiver(BufferedOutputStream pOutPayload, ArrayList<RtpPacket> pOutMedias)
 	{
-		if (pOutput == null) throw new IllegalArgumentException("pOutput is null");
-		medias  = new TreeMap<Integer, RtpPacket>();
-		crosses = new TreeMap<Integer, FecCross>();
-		cols    = new TreeMap<Integer, FecWait>();
-		rows    = new TreeMap<Integer, FecWait>();
-		startup = true;
-		output  = pOutput;
+		if (pOutPayload == null && outMedias == null)
+			throw new IllegalArgumentException("pOutPayload and outMedias are both null");
+		medias     = new TreeMap<Integer, RtpPacket>();
+		crosses    = new TreeMap<Integer, FecCross>();
+		cols       = new TreeMap<Integer, FecWait>();
+		rows       = new TreeMap<Integer, FecWait>();
+		startup    = true;
+		outPayload = pOutPayload;
+		outMedias  = pOutMedias;
 	}
 
 	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -345,7 +348,7 @@ public class FecReceiver
 		{
 			flushing = true;
 			out();
-			output.flush();
+			outPayload.flush();
 		}
 		finally
 		{
@@ -543,7 +546,8 @@ public class FecReceiver
 					if (media != null)
 					{
 						medias.remove(media.sequence);
-						if (output != null) output.write(media.payload);
+						if (outPayload != null) outPayload.write(media.payload);
+						if (outMedias  != null) outMedias.add(media);
 					}
 					else
 					{
@@ -736,7 +740,7 @@ public class FecReceiver
 		// Media packets are sorted by the buffer, so, it's time to test this feature --------------
 
 		output   = new ByteArrayOutputStream();
-		receiver = new FecReceiver(new BufferedOutputStream(output));
+		receiver = new FecReceiver(new BufferedOutputStream(output), null);
 		receiver.setDelay(1024, DelayUnits.packets);
 
 		List<Integer> source1   = new ArrayList<Integer>();
