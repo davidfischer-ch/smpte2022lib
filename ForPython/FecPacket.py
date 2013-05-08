@@ -60,6 +60,78 @@ class FecPacket(object):
         +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
         |N|D|type |index|    Offset     |      NA       |SNBase ext bits|
         +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+    The constructor will parse input bytes array to fill packet's fields.
+    In case of error (e.g. bad version number) the constructor will abort filling fields and
+    un-updated fields are set to their corresponding default value.
+
+    :param bytes: Input array of bytes to parse as a RTP packet with FEC payload
+    :type bytes: bytearray
+    :param length: Amount of bytes to read from the array of bytes
+    :type length: int
+    :return: Generated RTP packet with SMPTE 2022-1 FEC payload (aka FEC packet)
+
+    **Example usage**
+
+    Testing header fields value (based on packet 3 of capture DCM_FEC_2D_6_10.pcap):
+
+    * 1st row: RTP header, sequence = 37 798
+    * 2nd row: FEC header, SN = 50 288, PT recovery = 0, TS recovery = 7850
+
+    >>> header = bytearray.fromhex(u'80 60 93 a6 00 00 00 00 00 00 00 00 \
+                                     c4 70 00 00 80 00 00 00 00 00 1e aa 00 06 0a 00')
+    >>> length = 1344 - len(header)
+    >>> print(length)
+    1316
+    >>> bytes = header + bytearray(length)
+    >>> print(len(bytes))
+    1344
+    >>> fec = FecPacket(bytes, len(bytes))
+    >>> assert(fec.valid)
+    >>> print(fec)
+    errors                = []
+    sequence              = 37798
+    algorithm             = XOR
+    direction             = COL
+    snbase                = 50288
+    offset                = 6
+    na                    = 10
+    L x D                 = 6 x 10
+    payload type recovery = 0
+    timestamp recovery    = 7850
+    length recovery       = 0
+    payload recovery size = 1316
+    missing               = []
+
+    Testing header fields value (based on packet 5 of capture DCM_FEC_2D_6_10.pcap):
+
+    * 1st row: RTP header, sequence = 63 004
+    * 2nd row: FEC header, SN = 50 344, PT recovery = 0, TS recovery = 878
+
+    >>> header = bytearray.fromhex(u'80 60 f6 1c 00 00 00 00 00 00 00 00 \
+                                     c4 a8 00 00 80 00 00 00 00 00 03 6e 40 01 06 00')
+    >>> length = 1344 - len(header)
+    >>> print(length)
+    1316
+    >>> bytes = header + bytearray(length)
+    >>> print(len(bytes))
+    1344
+    >>> fec = FecPacket(bytes, len(bytes))
+    >>> assert(fec.valid)
+    >>> print(fec)
+    errors                = []
+    sequence              = 63004
+    algorithm             = XOR
+    direction             = ROW
+    snbase                = 50344
+    offset                = 1
+    na                    = 6
+    L x D                 = 6 x None
+    payload type recovery = 0
+    timestamp recovery    = 878
+    length recovery       = 0
+    payload recovery size = 1316
+    missing               = []
     """
 
     # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constants >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -273,79 +345,6 @@ class FecPacket(object):
     # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructor >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     def __init__(self, bytes=None, length=0):
-        u"""
-        This constructor will parse input bytes array to fill packet's fields.
-        In case of error (e.g. bad version number) the constructor will abort filling fields and
-        un-updated fields are set to their corresponding default value.
-
-        :param bytes: Input array of bytes to parse as a RTP packet with FEC payload
-        :type bytes: bytearray
-        :param length: Amount of bytes to read from the array of bytes
-        :type length: int
-        :return: Generated RTP packet with SMPTE 2022-1 FEC payload (aka FEC packet)
-
-        **Example usage**
-
-        Testing header fields value (based on packet 3 of capture DCM_FEC_2D_6_10.pcap):
-
-        * 1st row: RTP header, sequence = 37 798
-        * 2nd row: FEC header, SN = 50 288, PT recovery = 0, TS recovery = 7850
-
-        >>> header = bytearray.fromhex(u'80 60 93 a6 00 00 00 00 00 00 00 00 \
-                                         c4 70 00 00 80 00 00 00 00 00 1e aa 00 06 0a 00')
-        >>> length = 1344 - len(header)
-        >>> print(length)
-        1316
-        >>> bytes = header + bytearray(length)
-        >>> print(len(bytes))
-        1344
-        >>> fec = FecPacket(bytes, len(bytes))
-        >>> assert(fec.valid)
-        >>> print(fec)
-        errors                = []
-        sequence              = 37798
-        algorithm             = XOR
-        direction             = COL
-        snbase                = 50288
-        offset                = 6
-        na                    = 10
-        L x D                 = 6 x 10
-        payload type recovery = 0
-        timestamp recovery    = 7850
-        length recovery       = 0
-        payload recovery size = 1316
-        missing               = []
-
-        Testing header fields value (based on packet 5 of capture DCM_FEC_2D_6_10.pcap):
-
-        * 1st row: RTP header, sequence = 63 004
-        * 2nd row: FEC header, SN = 50 344, PT recovery = 0, TS recovery = 878
-
-        >>> header = bytearray.fromhex(u'80 60 f6 1c 00 00 00 00 00 00 00 00 \
-                                         c4 a8 00 00 80 00 00 00 00 00 03 6e 40 01 06 00')
-        >>> length = 1344 - len(header)
-        >>> print(length)
-        1316
-        >>> bytes = header + bytearray(length)
-        >>> print(len(bytes))
-        1344
-        >>> fec = FecPacket(bytes, len(bytes))
-        >>> assert(fec.valid)
-        >>> print(fec)
-        errors                = []
-        sequence              = 63004
-        algorithm             = XOR
-        direction             = ROW
-        snbase                = 50344
-        offset                = 1
-        na                    = 6
-        L x D                 = 6 x None
-        payload type recovery = 0
-        timestamp recovery    = 878
-        length recovery       = 0
-        payload recovery size = 1316
-        missing               = []
-        """
         # Fields default values
         self._errors = []
         self.sequence = 0
