@@ -166,11 +166,11 @@ class FecPacket(object):
     SNBL_MASK = 0xffff
     SNBE_SHIFT = 16
 
-    DIRECTION_NAMES = ['COL', 'ROW']
+    DIRECTION_NAMES = ('COL', 'ROW')
     DIRECTION_RANGE = range(len(DIRECTION_NAMES))
     COL, ROW = DIRECTION_RANGE
 
-    ALGORITHM_NAMES = ['XOR', 'Hamming', 'ReedSolomon']
+    ALGORITHM_NAMES = ('XOR', 'Hamming', 'ReedSolomon')
     ALGORITHM_RANGE = range(len(ALGORITHM_NAMES))
     XOR, Hamming, ReedSolomon = ALGORITHM_RANGE
 
