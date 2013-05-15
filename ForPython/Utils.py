@@ -32,16 +32,16 @@
 # Strongly inspired by:
 #   David Fischer's Master Thesis, Open-Source Infrastructure for Encoding and Distribution
 
-from bson.json_util import dumps, loads
-from datetime import datetime
 import inspect
-from ipaddr import IPAddress
 import json
 import logging
 import logging.handlers
 import re
-import uuid
 import sys
+import uuid
+from bson.json_util import dumps, loads
+from datetime import datetime
+from ipaddr import IPAddress
 
 
 class ForbiddenError(Exception):
