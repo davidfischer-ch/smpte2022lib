@@ -242,11 +242,11 @@ class SocketFecGenerator(object):
         signal.signal(signal.SIGTERM, handle_stop_signal)
         signal.signal(signal.SIGINT, handle_stop_signal)
         generator = SocketFecGenerator(args.media, args.col, args.row, 5, 6)
-        generator.run()
+        generator.run(args.timeout)
 
 if __name__ == '__main__':
     import doctest
-    from Utils import setup_logging
+    from py_logging import setup_logging
     setup_logging(name='smpte2022lib', filename=None, console=True, level=logging.DEBUG)
     log.info('Testing SocketFecGenerator with doctest')
     doctest.testmod(verbose=False)

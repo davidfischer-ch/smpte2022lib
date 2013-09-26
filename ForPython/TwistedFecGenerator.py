@@ -263,7 +263,7 @@ class TwistedFecGenerator(DatagramProtocol):
 
 if __name__ == '__main__':
     import doctest
-    from Utils import setup_logging
+    from py_logging import setup_logging
     setup_logging(name='smpte2022lib', filename=None, console=True, level=logging.DEBUG)
     log.info('Testing TwistedFecGenerator with doctest')
     doctest.testmod(verbose=False)
