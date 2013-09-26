@@ -222,6 +222,7 @@ class SocketFecGenerator(object):
         HELP_MEDIA = 'Socket of input stream'
         HELP_COL = 'Socket of generated FEC column stream'
         HELP_ROW = 'Socket of generated FEC row stream'
+        HELP_TIMEOUT = 'Set timeout for socket operations'
 
         dmedia = SocketFecGenerator.DEFAULT_MEDIA
         dcol = SocketFecGenerator.DEFAULT_COL
@@ -234,6 +235,7 @@ class SocketFecGenerator(object):
         parser.add_argument('-m', '--media', type=IPSocket, help=HELP_MEDIA, default=dmedia)
         parser.add_argument('-c', '--col', type=IPSocket, help=HELP_COL, default=dcol)
         parser.add_argument('-r', '--row', type=IPSocket, help=HELP_ROW, default=drow)
+        parser.add_argument('-t', '--timeout', type=int, help=HELP_TIMEOUT, nargs='?', default=None)
         args = parser.parse_args()
 
         def handle_stop_signal(SIGNAL, stack):
