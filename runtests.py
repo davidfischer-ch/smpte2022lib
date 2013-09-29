@@ -29,8 +29,8 @@
 
 def main():
     import sys
-    from os.path import abspath, dirname
-    sys.path.append(abspath(dirname(dirname(__file__))))
+#    from os.path import abspath, dirname
+#    sys.path.append(abspath(dirname(dirname(__file__))))
     try:
         from pyutils.py_unittest import runtests
         return runtests(__file__, cover_packages=[u'ForPython'], packages=[u'ForPython'])
