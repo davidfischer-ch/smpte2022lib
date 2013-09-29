@@ -259,8 +259,8 @@ class TwistedFecGenerator(DatagramProtocol):
 
 if __name__ == u'__main__':
     import doctest
-    from pyutils.py_logging import setup_logging
-    from pyutils.py_unicode import configure_unicode
+    from pyutils.logging import setup_logging
+    from pyutils.unicode import configure_unicode
     configure_unicode()
     setup_logging(name=u'smpte2022lib', filename=None, console=True, level=logging.DEBUG)
     log.info(u'Testing TwistedFecGenerator with doctest')

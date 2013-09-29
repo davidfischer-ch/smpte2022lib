@@ -26,7 +26,7 @@
 #
 # Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 
-from pyutils.py_unicode import to_bytes
+from pyutils.unicode import to_bytes
 from .FecPacket import FecPacket
 from .IPSocket import IPSocket
 from .RtpPacket import RtpPacket

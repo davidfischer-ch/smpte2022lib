@@ -30,7 +30,7 @@
 
 import struct
 from fastxor import fast_xor_inplace
-from pyutils.py_unicode import to_bytes
+from pyutils.unicode import to_bytes
 from .RtpPacket import RtpPacket
 
 class FecPacket(object):

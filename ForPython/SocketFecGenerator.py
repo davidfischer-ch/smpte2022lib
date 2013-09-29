@@ -28,7 +28,7 @@
 # Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 
 import logging, socket, struct
-from pyutils.py_unicode import to_bytes
+from pyutils.unicode import to_bytes
 from .FecGenerator import FecGenerator
 from .RtpPacket import RtpPacket
 
@@ -242,8 +242,8 @@ class SocketFecGenerator(object):
 
 if __name__ == u'__main__':
     import doctest
-    from pyutils.py_logging import setup_logging
-    from pyutils.py_unicode import configure_unicode
+    from pyutils.logging import setup_logging
+    from pyutils.unicode import configure_unicode
     configure_unicode()
     setup_logging(name=u'smpte2022lib', filename=None, console=True, level=logging.DEBUG)
     log.info(u'Testing SocketFecGenerator with doctest')
