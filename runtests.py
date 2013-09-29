@@ -32,10 +32,7 @@ def main():
     from os.path import abspath, dirname
     sys.path.append(abspath(dirname(dirname(__file__))))
     try:
-        try:
-            from py_unittest import runtests
-        except ImportError:
-            from pyutils.py_unittest import runtests
+        from pyutils.py_unittest import runtests
         return runtests(__file__, cover_packages=[u'ForPython'], packages=[u'ForPython'])
     except ImportError:
         print(sys.path)

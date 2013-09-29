@@ -28,9 +28,9 @@
 # Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 
 import logging, socket, struct
-from FecGenerator import FecGenerator
-from RtpPacket import RtpPacket
 from pyutils.py_unicode import to_bytes
+from .FecGenerator import FecGenerator
+from .RtpPacket import RtpPacket
 
 log = logging.getLogger(u'smpte2022lib')
 

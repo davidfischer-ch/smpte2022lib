@@ -28,9 +28,9 @@
 # Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 
 import logging, socket
-from FecGenerator import FecGenerator
-from RtpPacket import RtpPacket
 from twisted.internet.protocol import DatagramProtocol
+from .FecGenerator import FecGenerator
+from .RtpPacket import RtpPacket
 
 log = logging.getLogger(u'smpte2022lib')
 

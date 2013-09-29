@@ -26,8 +26,8 @@
 #
 # Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 
-from FecPacket import FecPacket
-from RtpPacket import RtpPacket
+from .FecPacket import FecPacket
+from .RtpPacket import RtpPacket
 
 
 class FecGenerator(object):

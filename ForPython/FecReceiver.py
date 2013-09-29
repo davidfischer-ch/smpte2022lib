@@ -26,11 +26,10 @@
 #
 # Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 
-from FecPacket import FecPacket
-from IPSocket import IPSocket
-from RtpPacket import RtpPacket
 from pyutils.py_unicode import to_bytes
-
+from .FecPacket import FecPacket
+from .IPSocket import IPSocket
+from .RtpPacket import RtpPacket
 
 class FecReceiver(object):
     u"""
