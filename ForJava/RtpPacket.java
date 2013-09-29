@@ -1,30 +1,28 @@
-/**************************************************************************************************\
-        OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
+/**********************************************************************************************************************\
+                    OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
 
-    Description : RTP packet
-    Authors     : David Fischer
-    Contact     : david.fischer.ch@gmail.com / david.fischer@hesge.ch
-    Copyright   : 2008-2013 smpte2022lib Team. All rights reserved.
-    Sponsoring  : Developed for a HES-SO CTI Ra&D project called GaVi
-                  Haute école du paysage, d'ingénierie et d'architecture @ Genève
-                  Telecommunications Laboratory
-\**************************************************************************************************/
+    Description   : RTP packet
+   Main Developer : David Fischer (david.fischer.ch@gmail.com)
+   Copyright      : Copyright (c) 2008-2013 smpte2022lib Team. All rights reserved.
+   Sponsoring     : Developed for a HES-SO CTI Ra&D project called GaVi
+                    Haute école du paysage, d'ingénierie et d'architecture @ Genève
+                    Telecommunications Laboratory
+
+\**********************************************************************************************************************/
 /*
   This file is part of smpte2022lib.
 
-  This project is free software: you can redistribute it and/or modify it under the terms of the
-  GNU General Public License as published by the Free Software Foundation, either version 3 of the
-  License, or (at your option) any later version.
-
-  This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  This project is free software: you can redistribute it and/or modify it under the terms of the EUPL v. 1.1 as provided
+  by the European Commission. This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
   without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-  See the GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License along with this project.
-  If not, see <http://www.gnu.org/licenses/>
+  See the European Union Public License for more details.
 
-  Retrieved from:
-    git clone git://github.com/davidfischer-ch/smpte2022lib.git
+  You should have received a copy of the EUPL General Public License along with this project.
+  If not, see he EUPL licence v1.1 is available in 22 languages:
+      22-07-2013, <https://joinup.ec.europa.eu/software/page/eupl/licence-eupl>
+
+  Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 */
 
 package smpte2022lib;
@@ -33,11 +31,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-// *************************************************************************************************
+// *********************************************************************************************************************
 // TODO
 public class RtpPacket implements Comparable<RtpPacket>
 {
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constants >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constants >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public static String ER_VERSION          = "RTP Header : Version must be set to 2";
 	public static String ER_PADDING_LENGTH   = "RTP Header : Bad padding length";
@@ -55,7 +53,7 @@ public class RtpPacket implements Comparable<RtpPacket>
 	public static final int  MP2T_CLK = 90000; // MPEG2 TS clock rate [Hz]
 	public static final int  S_MASK   = (int)0x0000FFFF;
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Fields >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Fields >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public byte    version     = 0;
 	public boolean padding     = false;
@@ -69,7 +67,7 @@ public class RtpPacket implements Comparable<RtpPacket>
 	public byte[]  payload     = null;
 	protected String ctorError = null;
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public boolean isValid()
 	{
@@ -110,7 +108,7 @@ public class RtpPacket implements Comparable<RtpPacket>
 		return (double)timestamp / (double)getClockRate();
 	}
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructors >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructors >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public RtpPacket() {}
 
@@ -180,7 +178,7 @@ public class RtpPacket implements Comparable<RtpPacket>
 				|                             ....                              |
 			*/
 			int extensionLength = Utils.get16bits(pBytes, offset + 2);
-			offset += 4 + extensionLength; 
+			offset += 4 + extensionLength;
 			if (length < offset)
 			{
 				ctorError = ER_EXTENSION_LENGTH;
@@ -192,7 +190,7 @@ public class RtpPacket implements Comparable<RtpPacket>
 		payload = Arrays.copyOfRange(pBytes, offset, length);
 	}
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Functions >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Functions >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public int compareTo(RtpPacket pPacket)
 	{
@@ -247,7 +245,7 @@ public class RtpPacket implements Comparable<RtpPacket>
 		RtpPacket rtp;
 		byte[] bytes;
 
-		// Testing invalid headers -----------------------------------------------------------------
+		// Testing invalid headers -------------------------------------------------------------------------------------
 		rtp = new RtpPacket(new byte[1], HEADER_LENGTH-1);
 		if (rtp.isValid()) return false; // Bad length
 
@@ -259,7 +257,7 @@ public class RtpPacket implements Comparable<RtpPacket>
 		rtp = new RtpPacket(bytes, HEADER_LENGTH);
 		if (rtp.isValid()) return false; // Padding enabled but not present
 
-		// Testing header fields value -------------------------------------------------------------
+		// Testing header fields value ---------------------------------------------------------------------------------
 		bytes = new byte[]
 		{
 			(byte)0x80, (byte)0xA1, (byte)0xA4, (byte)0x25,
@@ -275,7 +273,7 @@ public class RtpPacket implements Comparable<RtpPacket>
 			rtp.ssrc        != 2959105723L || rtp.payload.length !=      2 || rtp.csrc != null ||
 			rtp.payload[0]  !=       0x12  || rtp.payload[1]     !=   0x34) return false;
 
-		// Testing header fields value (with padding, extension and ccrc) --------------------------
+		// Testing header fields value (with padding, extension and ccrc) ----------------------------------------------
 		bytes = new byte[]
 		{
 			(byte)0xB5, (byte)0xA1, (byte)0xA4, (byte)0x01,

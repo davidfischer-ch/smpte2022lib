@@ -1,42 +1,29 @@
 
-/******************************************************************************\
-              REPRÉSENTE UN CHAMP DE BITS (GRAND ENTIER NON SIGNÉ)
-                       + UNE LISTE DOUBLEMENT CHAÎNÉE
+/**************************************************************************************************\
+        OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
 
-  Auteur    : David Fischer
-  Intégration VLC : Rossier Jérémie (2011)
-  Contact   : david.fischer.ch@gmail.com / david.fischer@hesge.ch
-              jeremie.rossier@gmail.com
+    Main Developer : David Fischer (david.fischer.ch@gmail.com)
+    VLC Integrator : Jérémie Rossier (jeremie.rossier@gmail.com)
+    Copyright      : Copyright (c) 2008-2013 smpte2022lib Team. All rights reserved.
+    Sponsoring     : Developed for a HES-SO CTI Ra&D project called GaVi
+                     Haute école du paysage, d'ingénierie et d'architecture @ Genève
+                     Telecommunications Laboratory
+\**************************************************************************************************/
+/*
+  This file is part of smpte2022lib Project.
 
-  Projet     : Implémentation SMPTE 2022 de VLC
-  Date début : 02.05.2008
-  Employeur  : Ecole d'Ingénieurs de Genève
-               Laboratoire de Télécommunications
-\******************************************************************************/
+  This project is free software: you can redistribute it and/or modify it under the terms of the
+  EUPL v. 1.1 as provided by the European Commission. This project is distributed in the hope that
+  it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+  or FITNESS FOR A PARTICULAR PURPOSE.
 
-/* Copyright (c) 2009 David Fischer (david.fischer.ch@gmail.com)
+  See the European Union Public License for more details.
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+  You should have received a copy of the EUPL General Public License along with this project.
+  If not, see he EUPL licence v1.1 is available in 22 languages:
+      22-07-2013, <https://joinup.ec.europa.eu/software/page/eupl/licence-eupl>
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-Retrieved from:
-  https://sourceforge.net/projects/smpte2022lib/
+  Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 */
 
 //------------------------------------------------------------------------------

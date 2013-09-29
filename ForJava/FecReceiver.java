@@ -1,30 +1,28 @@
-/**************************************************************************************************\
-        OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
+/**********************************************************************************************************************\
+                    OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
 
-    Description : Optimized SMPTE 2022-1 FEC receiver
-    Authors     : David Fischer
-    Contact     : david.fischer.ch@gmail.com / david.fischer@hesge.ch
-    Copyright   : 2008-2013 smpte2022lib Team. All rights reserved.
-    Sponsoring  : Developed for a HES-SO CTI Ra&D project called GaVi
-                  Haute école du paysage, d'ingénierie et d'architecture @ Genève
-                  Telecommunications Laboratory
-\**************************************************************************************************/
+    Description   : Optimized SMPTE 2022-1 FEC receiver
+   Main Developer : David Fischer (david.fischer.ch@gmail.com)
+   Copyright      : Copyright (c) 2008-2013 smpte2022lib Team. All rights reserved.
+   Sponsoring     : Developed for a HES-SO CTI Ra&D project called GaVi
+                    Haute école du paysage, d'ingénierie et d'architecture @ Genève
+                    Telecommunications Laboratory
+
+\**********************************************************************************************************************/
 /*
   This file is part of smpte2022lib.
 
-  This project is free software: you can redistribute it and/or modify it under the terms of the
-  GNU General Public License as published by the Free Software Foundation, either version 3 of the
-  License, or (at your option) any later version.
-
-  This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  This project is free software: you can redistribute it and/or modify it under the terms of the EUPL v. 1.1 as provided
+  by the European Commission. This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
   without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-  See the GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License along with this project.
-  If not, see <http://www.gnu.org/licenses/>
+  See the European Union Public License for more details.
 
-  Retrieved from:
-    git clone git://github.com/davidfischer-ch/smpte2022lib.git
+  You should have received a copy of the EUPL General Public License along with this project.
+  If not, see he EUPL licence v1.1 is available in 22 languages:
+      22-07-2013, <https://joinup.ec.europa.eu/software/page/eupl/licence-eupl>
+
+  Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 */
 
 package smpte2022lib;
@@ -43,24 +41,21 @@ import java.util.TreeMap;
 
 import smpte2022lib.FecPacket.Direction;
 
-// *************************************************************************************************
+// *********************************************************************************************************************
 // Optimized SMPTE 2022-1 FEC receiver
 public class FecReceiver
 {
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constants >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constants >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public static String EX_FLUSHING  = "Currently flushing buffers";
 	public static String EX_STARTUP   = "Current position still not initialized (startup state)";
 	public static String EX_DIRECTION = "FEC packet direction is neither col nor row";
-	public static String EX_VALID_RTP_MP2TS =
-		"pPacket is not valid (expected RTP packet + MPEG2-TS payload)";
+	public static String EX_VALID_RTP_MP2TS = "pPacket is not valid (expected RTP packet + MPEG2-TS payload)";
 	public static String EX_VALID_RTP = "pPacket is not valid (expected RTP packet)";
 
 	public static String EX_COL_OVERWRITE =
 		"Another column FEC packet is already registered to protect media packet n°%s";
-
-	public static String EX_ROW_OVERWRITE =
-			"Another row FEC packet is already registered to protect media packet n°%s";
+	public static String EX_ROW_OVERWRITE = "Another row FEC packet is already registered to protect media packet n°%s";
 
 	public static String ER_SET_MISSING =
 		"\nMessage : Unable to register missing media packet\nDetails :\n\n"+
@@ -77,19 +72,18 @@ public class FecReceiver
 	public static String ER_GET_ROW_CASCADE =
 			"FEC row cascade : Unable to compute sequence number of the media packet to recover";
 
-		public static String ER_NULL_ROW_CASCADE =
-				"FEC row cascade : Unable to find linked entry in crosses buffer";
+	public static String ER_NULL_ROW_CASCADE = "FEC row cascade : Unable to find linked entry in crosses buffer";
 
 	public static String ER_COL_MISMATCH = "Column FEC packet n°%s, expected n°%s";
 	public static String ER_ROW_MISMATCH = "Row FEC packet n°%s, expected n°%s";
 	public static String ER_MISSING_COUNT = "Missing count != 1";
 	public static String EX_DELAY_SECONDS = "FIXME delay based on time interval not implemented";
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Data Types >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Data Types >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public enum DelayUnits { packets, seconds }
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Fields >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Fields >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	// Debugging
 	public volatile String tag = "FecReceiver"; //. Logging tag
@@ -132,11 +126,11 @@ public class FecReceiver
 	protected int maxCross;    //. Largest amount of stored elements in the crosses buffer
 	protected int maxCol;      //. Largest amount of stored elements in the columns buffer
 	protected int maxRow;      //. Largest amount of stored elements in the rows buffer
-	
+
 	// Statistics about lost medias
 	protected TreeMap<Integer, Integer> lostogram = new TreeMap<Integer, Integer>();
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructors >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructors >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public FecReceiver(BufferedOutputStream pOutPayload, ArrayList<RtpPacket> pOutMedias)
 	{
@@ -151,7 +145,7 @@ public class FecReceiver
 		outMedias  = pOutMedias;
 	}
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	// Settings
 	public double getCurrentDelay()
@@ -160,8 +154,7 @@ public class FecReceiver
 		switch (delayUnits)
 		{
 		case packets: return medias.size();
-		case seconds: return medias.lastEntry().getValue().getTime() -
-							 medias.firstEntry().getValue().getTime();
+		case seconds: return medias.lastEntry().getValue().getTime() - medias.firstEntry().getValue().getTime();
 		default: return 0;
 		}
 	}
@@ -169,8 +162,7 @@ public class FecReceiver
 	public void setDelay(int pValue, DelayUnits pUnits)
 	{
 		if (pUnits == DelayUnits.seconds)
-			throw new UnsupportedOperationException
-				("FIXME output of media packets based on time delay");
+			throw new UnsupportedOperationException("FIXME output of media packets based on time delay");
 		delayValue = pValue;
 		delayUnits = pUnits;
 	}
@@ -201,12 +193,12 @@ public class FecReceiver
 	public int getMaxRowBuffered()   { return maxRow;         }
 	public int getFecMatrixL()       { return matrixL;        }
 	public int getFecMatrixD()       { return matrixD;        }
-	
+
 	public TreeMap<Integer, Integer> getLostogram() { return lostogram; }
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Functions >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Functions >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-	// Put an incoming media packet ================================================================
+	// Put an incoming media packet ====================================================================================
 	public void put(RtpPacket pPacket, boolean pOnlyMP2TS) throws Exception
 	{
 		if (flushing) throw new IllegalStateException(EX_FLUSHING);
@@ -218,7 +210,6 @@ public class FecReceiver
 		{
 			if (!pPacket.isValid()) throw new IllegalArgumentException(EX_VALID_RTP);
 		}
-				
 
 		// Put the media packet into medias buffer
 		if (medias.put(pPacket.sequence, pPacket) != null) mediaOverwritten++;
@@ -235,11 +226,10 @@ public class FecReceiver
 		out(); // FIXME maybe better to call it from another thread
 	}
 
-	// Put an incoming FEC packet, the algorithm will do the following according to the  ===========
-	// these scenarios :                                                                 ===========
-	// [1] The fec packet is useless if none of the protected media packets is missing   ===========
-	// [2] Only on media packet missing, fec packet is able to recover it now !          ===========
-	// [3] More than one media packet are missing, fec packet stored for future recovery ===========
+	// Put an incoming FEC packet, the algorithm will do the following according to these scenarios : ===
+	// [1] The fec packet is useless if none of the protected media packets is missing                ===
+	// [2] Only on media packet missing, fec packet is able to recover it now !                       ===
+	// [3] More than one media packet are missing, fec packet stored for future recovery              ===
 	public void put(FecPacket pPacket)
 	{
 		if (flushing) throw new IllegalStateException(EX_FLUSHING);
@@ -257,8 +247,7 @@ public class FecReceiver
 		int mediaLost  = 0;
 		int mediaMin   = wait.snbase;
 		int mediaMax   = (wait.snbase + wait.na * wait.offset) & RtpPacket.S_MASK;
-		for (int mediaTest = mediaMin; mediaTest != mediaMax;
-				 mediaTest = (mediaTest + wait.offset) & RtpPacket.S_MASK)
+		for (int mediaTest = mediaMin; mediaTest != mediaMax; mediaTest = (mediaTest + wait.offset) & RtpPacket.S_MASK)
 		{
 			// If media packet is not in the medias buffer (is missing)
 			if (!medias.containsKey(mediaTest))
@@ -301,8 +290,8 @@ public class FecReceiver
 				}
 				catch (Exception e)
 				{
-					throw new InternalError(String.format (ER_SET_MISSING, wait.toString(),
-						mediaMin, mediaMax, mediaTest));
+					throw new InternalError(String.format (ER_SET_MISSING, wait.toString(), mediaMin, mediaMax,
+											mediaTest));
 				}
 			}
 		}
@@ -315,8 +304,7 @@ public class FecReceiver
 
 		// FIXME check if 10*delayValue is a good way to avoid removing early fec packets !
 		// The fec packet is useless if it needs an already output'ed media packet to do recovery
-		boolean drop =
-			!ValidityWindow(wait.snbase, position, (position + 10*delayValue) & RtpPacket.S_MASK);
+		boolean drop = !ValidityWindow(wait.snbase, position, (position + 10*delayValue) & RtpPacket.S_MASK);
 
 		switch (wait.direction)
 		{
@@ -341,7 +329,7 @@ public class FecReceiver
 		// [3] More than one media packet are missing, fec packet stored for future recovery
 	}
 
-	// Flush all buffers and output media packets to the buffered output ===========================
+	// Flush all buffers and output media packets to the buffered output ===============================================
 	public void flush() throws IOException
 	{
 		try
@@ -356,7 +344,7 @@ public class FecReceiver
 		}
 	}
 
-	// Remove FEC packets that are stored/waiting but useless ======================================
+	// Remove FEC packets that are stored/waiting but useless ==========================================================
 	public void cleanup()
 	{
 		if (flushing) throw new IllegalStateException(EX_FLUSHING);
@@ -528,7 +516,7 @@ public class FecReceiver
 	{
 		try
 		{
-			DelayUnits units = flushing ? DelayUnits.packets : delayUnits; 
+			DelayUnits units = flushing ? DelayUnits.packets : delayUnits;
 			int        value = flushing ? 0                  : delayValue;
 			int missingCount = 0;
 
@@ -677,7 +665,7 @@ public class FecReceiver
 			"FEC matrix size (LxD) : "+matrixL+"x"+matrixD+" = "+(matrixL*matrixD)+" packets\n";
 	}
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Static >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Static >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public static InetSocketAddress computeColAddress(InetSocketAddress pMediaAddress)
 	{
@@ -724,7 +712,7 @@ public class FecReceiver
 		ByteArrayOutputStream output;
 		FecReceiver           receiver;
 
-		// Testing validity window condition -------------------------------------------------------
+		// Testing validity window condition ---------------------------------------------------------------------------
 
 		if (ValidityWindow(    0,     5, 10) != false) return 3;
 		if (ValidityWindow(    5,     5, 10) != true)  return 4;
@@ -737,7 +725,7 @@ public class FecReceiver
 		if (ValidityWindow(65534, 65534,  2) != true)  return 11;
 		if (ValidityWindow(65535, 65534,  2) != true)  return 12;
 
-		// Media packets are sorted by the buffer, so, it's time to test this feature --------------
+		// Media packets are sorted by the buffer, so, it's time to test this feature ----------------------------------
 
 		output   = new ByteArrayOutputStream();
 		receiver = new FecReceiver(new BufferedOutputStream(output), null);
@@ -756,14 +744,14 @@ public class FecReceiver
 			int sequence = source1.get(i);
 			String payload = Integer.toString(sequence);
 			try {
-				receiver.put(
-						RtpPacket.createMP2T(sequence, sequence*100, payload.getBytes()), true);
+				receiver.put(RtpPacket.createMP2T(sequence, sequence*100, payload.getBytes()), true);
 			} catch (Exception e) { return 13; }
 		}
 		try
 		{
 			receiver.flush();
-			if (!expected1.equals(output.toString())) return 14;
+			if (!expected1.equals(output.toString()))
+				return 14;
 		}
 		catch (IOException e)
 		{
@@ -771,7 +759,7 @@ public class FecReceiver
 			return 15;
 		}
 
-		// Testing fec algorithm correctness ! -----------------------------------------------------
+		// Testing fec algorithm correctness ! -------------------------------------------------------------------------
 
 		/* FIXME todo
 		output   = new ByteArrayOutputStream();
@@ -807,7 +795,7 @@ public class FecReceiver
 			return false;
 		}*/
 
-		// Testing helpers -------------------------------------------------------------------------
+		// Testing helpers ---------------------------------------------------------------------------------------------
 
 		byte[] b;
 		InetSocketAddress media, col, row;
@@ -816,34 +804,34 @@ public class FecReceiver
 			media = Utils.str2inet("");
 			if (computeColAddress(media) != null || computeRowAddress(media) != null) return 16;
 
-			// -------------------------------------------------------------------------------------
+			// ---------------------------------------------------------------------------------------------------------
 
 			media = new InetSocketAddress("239.232.0.222", 3000);
 
 			col = computeColAddress(media);
 			b   = col.getAddress().getAddress();
-			if (b[0] != (byte)239 || b[1] != (byte)232 || b[2] != 0 || b[3] != (byte)223 ||
-				col.getPort() != 3002) return 17;
+			if (b[0] != (byte)239 || b[1] != (byte)232 || b[2] != 0 || b[3] != (byte)223 || col.getPort() != 3002)
+				return 17;
 
 			row = computeRowAddress(media);
 			b   = row.getAddress().getAddress();
-			if (b[0] != (byte)239 || b[1] != (byte)232 || b[2] != 0 || b[3] != (byte)224 ||
-				row.getPort() != 3004) return 18;
+			if (b[0] != (byte)239 || b[1] != (byte)232 || b[2] != 0 || b[3] != (byte)224 || row.getPort() != 3004)
+				return 18;
 
-			// -------------------------------------------------------------------------------------
+			// ---------------------------------------------------------------------------------------------------------
 
 			// FIXME I know that IPv4 addresses ending with 255 are ... ;-)
 			media = new InetSocketAddress("239.232.255.255", 8000);
 
 			col = computeColAddress(media);
 			b   = col.getAddress().getAddress();
-			if (b[0] != (byte)239 || b[1] != (byte)233 || b[2] != 0 || b[3] != 0 ||
-				col.getPort() != 8002) return 19;
+			if (b[0] != (byte)239 || b[1] != (byte)233 || b[2] != 0 || b[3] != 0 || col.getPort() != 8002)
+				return 19;
 
 			row = computeRowAddress(media);
 			b   = row.getAddress().getAddress();
-			if (b[0] != (byte)239 || b[1] != (byte)233 || b[2] != 0 || b[3] != 1 ||
-				row.getPort() != 8004) return 20;
+			if (b[0] != (byte)239 || b[1] != (byte)233 || b[2] != 0 || b[3] != 1 || row.getPort() != 8004)
+				return 20;
 		}
 		catch (Exception e) { System.out.println (Utils.getException(e)); return 21; }
 

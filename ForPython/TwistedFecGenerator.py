@@ -1,42 +1,38 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#**************************************************************************************************#
-#       OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
+#**********************************************************************************************************************#
+#                   OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
 #
-#   Description : SMPTE 2022-1 FEC Library
-#   Authors     : David Fischer
-#   Contact     : david.fischer.ch@gmail.com / david.fischer@hesge.ch
-#   Copyright   : 2008-2013 smpte2022lib Team. All rights reserved.
-#   Sponsoring  : Developed for a HES-SO CTI Ra&D project called GaVi
-#                 Haute école du paysage, d'ingénierie et d'architecture @ Genève
-#                 Telecommunications Laboratory
-#**************************************************************************************************#
+#  Description    : SMPTE 2022-1 FEC Library
+#  Main Developer : David Fischer (david.fischer.ch@gmail.com)
+#  Copyright      : Copyright (c) 2008-2013 smpte2022lib Team. All rights reserved.
+#  Sponsoring     : Developed for a HES-SO CTI Ra&D project called GaVi
+#                   Haute école du paysage, d'ingénierie et d'architecture @ Genève
+#                   Telecommunications Laboratory
 #
-#  This file is part of smpte2022lib.
+#**********************************************************************************************************************#
 #
-#  This project is free software: you can redistribute it and/or modify it under the terms of the
-#  GNU General Public License as published by the Free Software Foundation, either version 3 of the
-#  License, or (at your option) any later version.
+# This file is part of smpte2022lib.
 #
-#  This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-#  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-#  See the GNU General Public License for more details.
+# This project is free software: you can redistribute it and/or modify it under the terms of the EUPL v. 1.1 as provided
+# by the European Commission. This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-#  You should have received a copy of the GNU General Public License along with this project.
-#  If not, see <http://www.gnu.org/licenses/>
+# See the European Union Public License for more details.
 #
-#  Retrieved from:
-#    git clone git://github.com/davidfischer-ch/smpte2022lib.git
+# You should have received a copy of the EUPL General Public License along with this project.
+# If not, see he EUPL licence v1.1 is available in 22 languages:
+#     22-07-2013, <https://joinup.ec.europa.eu/software/page/eupl/licence-eupl>
 #
+# Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 
-import logging
-import socket
+import logging, socket
 from FecGenerator import FecGenerator
 from RtpPacket import RtpPacket
 from twisted.internet.protocol import DatagramProtocol
 
-log = logging.getLogger('smpte2022lib')
+log = logging.getLogger(u'smpte2022lib')
 
 
 # FIXME send to multicast address fail (?)
@@ -54,8 +50,8 @@ class TwistedFecGenerator(DatagramProtocol):
     >>> col = IPSocket(TwistedFecGenerator.DEFAULT_COL)
     >>> row = IPSocket(TwistedFecGenerator.DEFAULT_ROW)
     >>> generator = TwistedFecGenerator(media['ip'], 'MyTwistedFecGenerator', 5, 6, col, row)
-    >>> reactor.listenMulticast(media['port'], generator, listenMultiple=True)
-    <__main__.TwistedFecGenerator on 5004>
+    >>> reactor.listenMulticast(media['port'], generator, listenMultiple=True) # doctest: +ELLIPSIS
+    <....TwistedFecGenerator on 5004>
     >>> print generator._generator
     Matrix size L x D            = 5 x 6
     Total invalid media packets  = 0
@@ -68,13 +64,13 @@ class TwistedFecGenerator(DatagramProtocol):
     Then you only need to start reactor with ``reactor.run()``.
     """
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-    DEFAULT_MEDIA = '239.232.0.222:5004'
-    DEFAULT_COL = '127.0.0.1:5006'  # '232.232.0.222:5006'
-    DEFAULT_ROW = '127.0.0.1:5008'  # '232.232.0.222:5008'
+    DEFAULT_MEDIA = u'239.232.0.222:5004'
+    DEFAULT_COL = u'127.0.0.1:5006'  # '232.232.0.222:5006'
+    DEFAULT_ROW = u'127.0.0.1:5008'  # '232.232.0.222:5008'
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructor >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructor >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     def __init__(self, group, name, L, D, col_socket, row_socket):
         u"""
@@ -102,19 +98,19 @@ class TwistedFecGenerator(DatagramProtocol):
         self._generator.onNewRow = self.onNewRow
         self._generator.onReset = self.onReset
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Functions >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Functions >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     def startProtocol(self):
-        log.info('SMPTE 2022-1 FEC Generator by David Fischer')
-        log.info('started Listening %s' % self.group)
+        log.info(u'SMPTE 2022-1 FEC Generator by David Fischer')
+        log.info(u'started Listening {0}'.format(self.group))
         self.transport.joinGroup(self.group)
         self.transport.setLoopbackMode(False)
         self.transport.setTTL(1)
 
     def datagramReceived(self, datagram, socket):
         media = RtpPacket(bytearray(datagram), len(datagram))
-        log.debug('Incoming media packet seq=%s ts=%s psize=%s socket=%s' %
-                  (media.sequence, media.timestamp, media.payload_size, socket))
+        log.debug(u'Incoming media packet seq={0} ts={1} psize={2} socket={3}'.format(
+                  media.sequence, media.timestamp, media.payload_size, socket))
         self._generator.putMedia(media)
 
     def onNewCol(self, col, generator):
@@ -129,11 +125,11 @@ class TwistedFecGenerator(DatagramProtocol):
         :type generator: FecGenerator
         """
         col_rtp = RtpPacket.create(col.sequence, 0, RtpPacket.MP2T_PT, col.bytes)
-        log.info('Send COL FEC packet seq=%s snbase=%s LxD=%sx%s trec=%s socket=%s' %
-                 (col.sequence, col.snbase, col.L, col.D, col.timestamp_recovery, self.col_socket))
+        log.info(u'Send COL FEC packet seq={0} snbase={1} LxD={2}x{3} trec={4} socket={5}'.format(
+                 col.sequence, col.snbase, col.L, col.D, col.timestamp_recovery, self.col_socket))
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
-        sock.sendto(col_rtp.bytes, (self.col_socket['ip'], self.col_socket['port']))
+        sock.sendto(col_rtp.bytes, (self.col_socket[u'ip'], self.col_socket[u'port']))
 
     def onNewRow(self, row, generator):
         u"""
@@ -147,11 +143,11 @@ class TwistedFecGenerator(DatagramProtocol):
         :type generator: FecGenerator
         """
         row_rtp = RtpPacket.create(row.sequence, 0, RtpPacket.MP2T_PT, row.bytes)
-        log.info('Send ROW FEC packet seq=%s snbase=%s LxD=%sx%s trec=%s socket=%s' %
-                 (row.sequence, row.snbase, row.L, row.D, row.timestamp_recovery, self.col_socket))
+        log.info(u'Send ROW FEC packet seq={0} snbase={1} LxD={2}x{3} trec={4} socket={5}'.format(
+                 row.sequence, row.snbase, row.L, row.D, row.timestamp_recovery, self.col_socket))
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
-        sock.sendto(row_rtp.bytes, (self.row_socket['ip'], self.row_socket['port']))
+        sock.sendto(row_rtp.bytes, (self.row_socket[u'ip'], self.row_socket[u'port']))
 
     def onReset(self, media, generator):
         u"""
@@ -164,8 +160,8 @@ class TwistedFecGenerator(DatagramProtocol):
         :param generator: The generator that fired this method / event
         :type generator: FecGenerator
         """
-        log.warning('Media seq=%s is out of sequence (expected %s) : FEC algorithm resetted !' %
-                    (media.sequence, generator._media_sequence))
+        log.warning(u'Media seq={0} is out of sequence (expected {1}) : FEC algorithm resetted !'.format(
+                    media.sequence, generator._media_sequence))
 
     @staticmethod
     def main():
@@ -181,9 +177,9 @@ class TwistedFecGenerator(DatagramProtocol):
         from IPSocket import IPSocket
         from twisted.internet import reactor
 
-        HELP_MEDIA = 'Socket of input stream'
-        HELP_COL = 'Socket of generated FEC column stream'
-        HELP_ROW = 'Socket of generated FEC row stream'
+        HELP_MEDIA = u'Socket of input stream'
+        HELP_COL   = u'Socket of generated FEC column stream'
+        HELP_ROW   = u'Socket of generated FEC row stream'
 
         dmedia = TwistedFecGenerator.DEFAULT_MEDIA
         dcol = TwistedFecGenerator.DEFAULT_COL
@@ -191,21 +187,21 @@ class TwistedFecGenerator(DatagramProtocol):
 
         parser = ArgumentParser(
             formatter_class=ArgumentDefaultsHelpFormatter,
-            epilog='''This utility create SMPTE 2022-1 FEC streams from a sniffed source stream.
-                      SMPTE 2022-1 help streaming systems to improve QoE of real-time RTP transmissions.''')
-        parser.add_argument('-m', '--media', type=IPSocket, help=HELP_MEDIA, default=dmedia)
-        parser.add_argument('-c', '--col', type=IPSocket, help=HELP_COL, default=dcol)
-        parser.add_argument('-r', '--row', type=IPSocket, help=HELP_ROW, default=drow)
+            epilog=u'''This utility create SMPTE 2022-1 FEC streams from a sniffed source stream.
+                       SMPTE 2022-1 help streaming systems to improve QoE of real-time RTP transmissions.''')
+        parser.add_argument(u'-m', u'--media', type=IPSocket, help=HELP_MEDIA, default=dmedia)
+        parser.add_argument(u'-c', u'--col',   type=IPSocket, help=HELP_COL,   default=dcol)
+        parser.add_argument(u'-r', u'--row',   type=IPSocket, help=HELP_ROW,   default=drow)
         args = parser.parse_args()
 
         def handle_stop_signal(SIGNAL, stack):
-            log.info('\nGenerator stopped\n')
+            log.info(u'\nGenerator stopped\n')
             reactor.stop()
 
         signal.signal(signal.SIGTERM, handle_stop_signal)
         signal.signal(signal.SIGINT, handle_stop_signal)
 
-        TwistedFecGenerator(args.media['ip'], 'MyGenerator', 5, 6, args.col, args.row)
+        TwistedFecGenerator(args.media[u'ip'], u'MyGenerator', 5, 6, args.col, args.row)
         # Disabled otherwise multicast packets are received twice !
         # See ``sudo watch ip maddr show`` they will be 2 clients if uncommented :
         #reactor.listenMulticast(args.media['port'], generator, listenMultiple=True)
@@ -261,11 +257,13 @@ class TwistedFecGenerator(DatagramProtocol):
 
     #     sleep(10)
 
-if __name__ == '__main__':
+if __name__ == u'__main__':
     import doctest
-    from py_logging import setup_logging
-    setup_logging(name='smpte2022lib', filename=None, console=True, level=logging.DEBUG)
-    log.info('Testing TwistedFecGenerator with doctest')
+    from pyutils.py_logging import setup_logging
+    from pyutils.py_unicode import configure_unicode
+    configure_unicode()
+    setup_logging(name=u'smpte2022lib', filename=None, console=True, level=logging.DEBUG)
+    log.info(u'Testing TwistedFecGenerator with doctest')
     doctest.testmod(verbose=False)
-    log.info('OK')
+    log.info(u'OK')
     TwistedFecGenerator.main()

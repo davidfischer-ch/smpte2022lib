@@ -1,42 +1,38 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#**************************************************************************************************#
-#       OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
+#**********************************************************************************************************************#
+#                   OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
 #
-#   Description : SMPTE 2022-1 FEC Library
-#   Authors     : David Fischer
-#   Contact     : david.fischer.ch@gmail.com / david.fischer@hesge.ch
-#   Copyright   : 2008-2013 smpte2022lib Team. All rights reserved.
-#   Sponsoring  : Developed for a HES-SO CTI Ra&D project called GaVi
-#                 Haute école du paysage, d'ingénierie et d'architecture @ Genève
-#                 Telecommunications Laboratory
-#**************************************************************************************************#
+#  Description    : SMPTE 2022-1 FEC Library
+#  Main Developer : David Fischer (david.fischer.ch@gmail.com)
+#  Copyright      : Copyright (c) 2008-2013 smpte2022lib Team. All rights reserved.
+#  Sponsoring     : Developed for a HES-SO CTI Ra&D project called GaVi
+#                   Haute école du paysage, d'ingénierie et d'architecture @ Genève
+#                   Telecommunications Laboratory
 #
-#  This file is part of smpte2022lib.
+#**********************************************************************************************************************#
 #
-#  This project is free software: you can redistribute it and/or modify it under the terms of the
-#  GNU General Public License as published by the Free Software Foundation, either version 3 of the
-#  License, or (at your option) any later version.
+# This file is part of smpte2022lib.
 #
-#  This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-#  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-#  See the GNU General Public License for more details.
+# This project is free software: you can redistribute it and/or modify it under the terms of the EUPL v. 1.1 as provided
+# by the European Commission. This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-#  You should have received a copy of the GNU General Public License along with this project.
-#  If not, see <http://www.gnu.org/licenses/>
+# See the European Union Public License for more details.
 #
-#  Retrieved from:
-#    git clone git://github.com/davidfischer-ch/smpte2022lib.git
+# You should have received a copy of the EUPL General Public License along with this project.
+# If not, see he EUPL licence v1.1 is available in 22 languages:
+#     22-07-2013, <https://joinup.ec.europa.eu/software/page/eupl/licence-eupl>
 #
+# Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 
-import logging
-import socket
-import struct
+import logging, socket, struct
 from FecGenerator import FecGenerator
 from RtpPacket import RtpPacket
+from pyutils.py_unicode import to_bytes
 
-log = logging.getLogger('smpte2022lib')
+log = logging.getLogger(u'smpte2022lib')
 
 
 # FIXME send to multicast address fail (?)
@@ -62,13 +58,13 @@ class SocketFecGenerator(object):
     Medias buffer (seq. numbers) = []
     """
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-    DEFAULT_MEDIA = '239.232.0.222:5004'
-    DEFAULT_COL = '232.232.0.222:5006'
-    DEFAULT_ROW = '232.232.0.222:5008'
+    DEFAULT_MEDIA = u'239.232.0.222:5004'
+    DEFAULT_COL = u'232.232.0.222:5006'
+    DEFAULT_ROW = u'232.232.0.222:5008'
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructor >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructor >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     def __init__(self, media_socket, col_socket, row_socket, L, D):
         u"""
@@ -94,16 +90,14 @@ class SocketFecGenerator(object):
         self._generator.onReset = self.onReset
         self._running = False
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     @property
     def running(self):
-        u"""
-        Return True if FEC generator is running.
-        """
+        u"""Return True if FEC generator is running."""
         return self._running
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Functions >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Functions >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     def run(self, timeout):
         u"""
@@ -120,19 +114,19 @@ class SocketFecGenerator(object):
 
         **Example usage**:
 
-        >>> print('TODO lazy developer !')
+        >> print('TODO lazy developer !')
         I've done the code, but not the example ... I will do it later ...
         """
         if self._running:
-            raise NotImplementedError('SMPTE 2022-1 FEC Generator already running')
+            raise NotImplementedError(to_bytes(u'SMPTE 2022-1 FEC Generator already running'))
         self._running = True
-        log.info('SMPTE 2022-1 FEC Generator by David Fischer')
-        log.info('Started listening %s' % self.media_socket)
+        log.info(u'SMPTE 2022-1 FEC Generator by David Fischer')
+        log.info(u'Started listening {0}'.format(self.media_socket))
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
-        sock.bind((self.media_socket['ip'], self.media_socket['port']))
+        sock.bind((self.media_socket[u'ip'], self.media_socket[u'port']))
         # Tell the operating system to add the socket to the multicast group on all interfaces
-        group = socket.inet_aton(self.media_socket['ip'])
+        group = socket.inet_aton(self.media_socket[u'ip'])
         mreq = struct.pack('4sL', group, socket.INADDR_ANY)
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
         sock.settimeout(timeout)  # Time-out must be enabled to react to stop requests
@@ -140,12 +134,12 @@ class SocketFecGenerator(object):
             try:
                 datagram, address = sock.recvfrom(1024)
                 media = RtpPacket(bytearray(datagram), len(datagram))
-                log.debug('Incoming media packet seq=%s ts=%s psize=%s ssrc=%s address=%s' %
-                         (media.sequence, media.timestamp, media.payload_size, media.ssrc, address))
+                log.debug(u'Incoming media packet seq={0} ts={1} psize={2} ssrc={3} address={4}'.format(
+                          media.sequence, media.timestamp, media.payload_size, media.ssrc, address))
                 self._generator.putMedia(media)
             except socket.timeout:
                 pass  # Handle time-out by doing nothing more than re-looping
-        log.info('Stopped listening %s' % self.media_socket)
+        log.info(u'Stopped listening {0}'.format(self.media_socket))
 
     def stop(self):
         u"""
@@ -168,11 +162,11 @@ class SocketFecGenerator(object):
         :type generator: FecGenerator
         """
         col_rtp = RtpPacket.create(col.sequence, 0, RtpPacket.DYNAMIC_PT, col.bytes)
-        log.debug('Send COL FEC packet seq=%s snbase=%s LxD=%sx%s trec=%s socket=%s' %
-                 (col.sequence, col.snbase, col.L, col.D, col.timestamp_recovery, self.col_socket))
+        log.debug(u'Send COL FEC packet seq={0} snbase={1} LxD={2}x{3} trec={4} socket={5}'.format(
+                  col.sequence, col.snbase, col.L, col.D, col.timestamp_recovery, self.col_socket))
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
-        sock.sendto(col_rtp.bytes, (self.col_socket['ip'], self.col_socket['port']))
+        sock.sendto(col_rtp.bytes, (self.col_socket[u'ip'], self.col_socket[u'port']))
 
     def onNewRow(self, row, generator):
         u"""
@@ -186,11 +180,11 @@ class SocketFecGenerator(object):
         :type generator: FecGenerator
         """
         row_rtp = RtpPacket.create(row.sequence, 0, RtpPacket.DYNAMIC_PT, row.bytes)
-        log.debug('Send ROW FEC packet seq=%s snbase=%s LxD=%sx%s trec=%s socket=%s' %
-                  (row.sequence, row.snbase, row.L, row.D, row.timestamp_recovery, self.row_socket))
+        log.debug(u'Send ROW FEC packet seq={0} snbase={1} LxD={2}x{3} trec={4} socket={5}'.format(
+                  row.sequence, row.snbase, row.L, row.D, row.timestamp_recovery, self.row_socket))
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
-        sock.sendto(row_rtp.bytes, (self.row_socket['ip'], self.row_socket['port']))
+        sock.sendto(row_rtp.bytes, (self.row_socket[u'ip'], self.row_socket[u'port']))
 
     def onReset(self, media, generator):
         u"""
@@ -203,8 +197,8 @@ class SocketFecGenerator(object):
         :param generator: The generator that fired this method / event
         :type generator: FecGenerator
         """
-        log.warning('Media seq=%s is out of sequence (expected %s) : FEC algorithm resetted !' %
-                    (media.sequence, generator._media_sequence))
+        log.warning(u'Media seq={0} is out of sequence (expected {1}) : FEC algorithm resetted !'.format(
+                    media.sequence, generator._media_sequence))
 
     @staticmethod
     def main():
@@ -219,10 +213,10 @@ class SocketFecGenerator(object):
         from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
         from IPSocket import IPSocket
 
-        HELP_MEDIA = 'Socket of input stream'
-        HELP_COL = 'Socket of generated FEC column stream'
-        HELP_ROW = 'Socket of generated FEC row stream'
-        HELP_TIMEOUT = 'Set timeout for socket operations'
+        HELP_MEDIA   = u'Socket of input stream'
+        HELP_COL     = u'Socket of generated FEC column stream'
+        HELP_ROW     = u'Socket of generated FEC row stream'
+        HELP_TIMEOUT = u'Set timeout for socket operations'
 
         dmedia = SocketFecGenerator.DEFAULT_MEDIA
         dcol = SocketFecGenerator.DEFAULT_COL
@@ -230,27 +224,29 @@ class SocketFecGenerator(object):
 
         parser = ArgumentParser(
             formatter_class=ArgumentDefaultsHelpFormatter,
-            epilog='''This utility create SMPTE 2022-1 FEC streams from a sniffed source stream.
-                      SMPTE 2022-1 help streaming systems to improve QoE of real-time RTP transmissions.''')
-        parser.add_argument('-m', '--media', type=IPSocket, help=HELP_MEDIA, default=dmedia)
-        parser.add_argument('-c', '--col', type=IPSocket, help=HELP_COL, default=dcol)
-        parser.add_argument('-r', '--row', type=IPSocket, help=HELP_ROW, default=drow)
-        parser.add_argument('-t', '--timeout', type=int, help=HELP_TIMEOUT, nargs='?', default=None)
+            epilog=u'''This utility create SMPTE 2022-1 FEC streams from a sniffed source stream.
+                       SMPTE 2022-1 help streaming systems to improve QoE of real-time RTP transmissions.''')
+        parser.add_argument(u'-m', u'--media',  type=IPSocket,  help=HELP_MEDIA, default=dmedia)
+        parser.add_argument(u'-c', u'--col',     type=IPSocket, help=HELP_COL,   default=dcol)
+        parser.add_argument(u'-r', u'--row',     type=IPSocket, help=HELP_ROW,   default=drow)
+        parser.add_argument(u'-t', u'--timeout', type=int,      help=HELP_TIMEOUT, nargs='?', default=None)
         args = parser.parse_args()
 
         def handle_stop_signal(SIGNAL, stack):
-            log.info('\nGenerator stopped\n')
+            log.info(u'\nGenerator stopped\n')
 
         signal.signal(signal.SIGTERM, handle_stop_signal)
         signal.signal(signal.SIGINT, handle_stop_signal)
         generator = SocketFecGenerator(args.media, args.col, args.row, 5, 6)
         generator.run(args.timeout)
 
-if __name__ == '__main__':
+if __name__ == u'__main__':
     import doctest
-    from py_logging import setup_logging
-    setup_logging(name='smpte2022lib', filename=None, console=True, level=logging.DEBUG)
-    log.info('Testing SocketFecGenerator with doctest')
+    from pyutils.py_logging import setup_logging
+    from pyutils.py_unicode import configure_unicode
+    configure_unicode()
+    setup_logging(name=u'smpte2022lib', filename=None, console=True, level=logging.DEBUG)
+    log.info(u'Testing SocketFecGenerator with doctest')
     doctest.testmod(verbose=False)
-    log.info('OK')
+    log.info(u'OK')
     SocketFecGenerator.main()

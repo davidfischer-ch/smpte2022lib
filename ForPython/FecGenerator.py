@@ -1,34 +1,30 @@
-#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#**************************************************************************************************#
-#       OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
+#**********************************************************************************************************************#
+#                   OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
 #
-#   Description : SMPTE 2022-1 FEC Library
-#   Authors     : David Fischer
-#   Contact     : david.fischer.ch@gmail.com / david.fischer@hesge.ch
-#   Copyright   : 2008-2013 smpte2022lib Team. All rights reserved.
-#   Sponsoring  : Developed for a HES-SO CTI Ra&D project called GaVi
-#                 Haute école du paysage, d'ingénierie et d'architecture @ Genève
-#                 Telecommunications Laboratory
-#**************************************************************************************************#
+#  Description    : SMPTE 2022-1 FEC Library
+#  Main Developer : David Fischer (david.fischer.ch@gmail.com)
+#  Copyright      : Copyright (c) 2008-2013 smpte2022lib Team. All rights reserved.
+#  Sponsoring     : Developed for a HES-SO CTI Ra&D project called GaVi
+#                   Haute école du paysage, d'ingénierie et d'architecture @ Genève
+#                   Telecommunications Laboratory
 #
-#  This file is part of smpte2022lib.
+#**********************************************************************************************************************#
 #
-#  This project is free software: you can redistribute it and/or modify it under the terms of the
-#  GNU General Public License as published by the Free Software Foundation, either version 3 of the
-#  License, or (at your option) any later version.
+# This file is part of smpte2022lib.
 #
-#  This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-#  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-#  See the GNU General Public License for more details.
+# This project is free software: you can redistribute it and/or modify it under the terms of the EUPL v. 1.1 as provided
+# by the European Commission. This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-#  You should have received a copy of the GNU General Public License along with this project.
-#  If not, see <http://www.gnu.org/licenses/>
+# See the European Union Public License for more details.
 #
-#  Retrieved from:
-#    git clone git://github.com/davidfischer-ch/smpte2022lib.git
+# You should have received a copy of the EUPL General Public License along with this project.
+# If not, see he EUPL licence v1.1 is available in 22 languages:
+#     22-07-2013, <https://joinup.ec.europa.eu/software/page/eupl/licence-eupl>
 #
+# Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 
 from FecPacket import FecPacket
 from RtpPacket import RtpPacket
@@ -40,7 +36,7 @@ class FecGenerator(object):
     This generator accept incoming RTP media packets and compute corresponding FEC packets.
     """
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     @property
     def L(self):
@@ -66,7 +62,7 @@ class FecGenerator(object):
         """
         return self._D
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructor >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructor >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     def __init__(self, L, D):
         u"""
@@ -79,16 +75,13 @@ class FecGenerator(object):
         :param extra: Extra argument for ``onNewCol`` and ``onNewRow`` methods
         :type extra: object
         """
-        self._L = L
-        self._D = D
-        self._col_sequence = 1
-        self._row_sequence = 1
+        self._L, self._D = L, D
+        self._col_sequence = self._row_sequence = 1
         self._media_sequence = None
         self._medias = []
-        self._invalid = 0
-        self._total = 0
+        self._invalid = self._total = 0
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Functions >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Functions >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     def onNewCol(self, col, caller):
         u"""
@@ -105,8 +98,8 @@ class FecGenerator(object):
         :param caller: The generator that fired this method / event
         :type caller: FecGenerator
         """
-        print('New COL FEC packet seq=%s snbase=%s LxD=%sx%s trec=%s' %
-              (col.sequence, col.snbase, col.L, col.D, col.timestamp_recovery))
+        print(u'New COL FEC packet seq={0} snbase={1} LxD={2}x{3} trec={4}'.format(
+              col.sequence, col.snbase, col.L, col.D, col.timestamp_recovery))
 
     def onNewRow(self, row, caller):
         u"""
@@ -123,8 +116,8 @@ class FecGenerator(object):
         :param caller: The generator that fired this method / event
         :type caller: FecGenerator
         """
-        print('New ROW FEC packet seq=%s snbase=%s LxD=%sx%s trec=%s' %
-              (row.sequence, row.snbase, row.L, row.D, row.timestamp_recovery))
+        print(u'New ROW FEC packet seq={0} snbase={1} LxD={2}x{3} trec={4}'.format(
+              row.sequence, row.snbase, row.L, row.D, row.timestamp_recovery))
 
     def onReset(self, media, caller):
         u"""
@@ -141,8 +134,8 @@ class FecGenerator(object):
         :param caller: The generator that fired this method / event
         :type caller: FecGenerator
         """
-        print('Media seq=%s is out of sequence (expected %s) : FEC algorithm resetted !' %
-              (media.sequence, self._media_sequence))
+        print(u'Media seq={0} is out of sequence (expected {1}) : FEC algorithm resetted !'.format(
+              media.sequence, self._media_sequence))
 
     def putMedia(self, media):
         u"""
@@ -270,18 +263,11 @@ class FecGenerator(object):
         Medias buffer (seq. numbers) = []
         """
         medias = [p.sequence for p in self._medias]
-        return ("Matrix size L x D            = %s x %s\n"
-                "Total invalid media packets  = %s\n"
-                "Total media packets received = %s\n"
-                "Column sequence number       = %s\n"
-                "Row    sequence number       = %s\n"
-                "Media  sequence number       = %s\n"
-                "Medias buffer (seq. numbers) = %s" %
-                (self._L, self._D, self._invalid, self._total, self._col_sequence,
-                 self._row_sequence, self._media_sequence, medias))
-
-if __name__ == '__main__':
-    print('Testing FecGenerator with doctest')
-    import doctest
-    doctest.testmod(verbose=False)
-    print('OK')
+        return (u"""Matrix size L x D            = {0} x {1}
+Total invalid media packets  = {2}
+Total media packets received = {3}
+Column sequence number       = {4}
+Row    sequence number       = {5}
+Media  sequence number       = {6}
+Medias buffer (seq. numbers) = {7}""".format(self._L, self._D, self._invalid, self._total, self._col_sequence,
+                                             self._row_sequence, self._media_sequence, medias))

@@ -1,38 +1,35 @@
-#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#**************************************************************************************************#
-#       OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
+#**********************************************************************************************************************#
+#                   OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
 #
-#   Description : SMPTE 2022-1 FEC Library
-#   Authors     : David Fischer
-#   Contact     : david.fischer.ch@gmail.com / david.fischer@hesge.ch
-#   Copyright   : 2008-2013 smpte2022lib Team. All rights reserved.
-#   Sponsoring  : Developed for a HES-SO CTI Ra&D project called GaVi
-#                 Haute école du paysage, d'ingénierie et d'architecture @ Genève
-#                 Telecommunications Laboratory
-#**************************************************************************************************#
+#  Description    : SMPTE 2022-1 FEC Library
+#  Main Developer : David Fischer (david.fischer.ch@gmail.com)
+#  Copyright      : Copyright (c) 2008-2013 smpte2022lib Team. All rights reserved.
+#  Sponsoring     : Developed for a HES-SO CTI Ra&D project called GaVi
+#                   Haute école du paysage, d'ingénierie et d'architecture @ Genève
+#                   Telecommunications Laboratory
 #
-#  This file is part of smpte2022lib.
+#**********************************************************************************************************************#
 #
-#  This project is free software: you can redistribute it and/or modify it under the terms of the
-#  GNU General Public License as published by the Free Software Foundation, either version 3 of the
-#  License, or (at your option) any later version.
+# This file is part of smpte2022lib.
 #
-#  This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-#  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-#  See the GNU General Public License for more details.
+# This project is free software: you can redistribute it and/or modify it under the terms of the EUPL v. 1.1 as provided
+# by the European Commission. This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-#  You should have received a copy of the GNU General Public License along with this project.
-#  If not, see <http://www.gnu.org/licenses/>
+# See the European Union Public License for more details.
 #
-#  Retrieved from:
-#    git clone git://github.com/davidfischer-ch/smpte2022lib.git
+# You should have received a copy of the EUPL General Public License along with this project.
+# If not, see he EUPL licence v1.1 is available in 22 languages:
+#     22-07-2013, <https://joinup.ec.europa.eu/software/page/eupl/licence-eupl>
 #
+# Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 
 from FecPacket import FecPacket
 from IPSocket import IPSocket
 from RtpPacket import RtpPacket
+from pyutils.py_unicode import to_bytes
 
 
 class FecReceiver(object):
@@ -53,7 +50,7 @@ class FecReceiver(object):
     >>> for i in source:
     ...     receiver.putMedia(RtpPacket.create(i, i * 100, RtpPacket.MP2T_PT, str(i)), True)
     >>> receiver.flush()
-    >>> assert(output.getvalue() == ''.join(str(i) for i in range(1024)))
+    >>> assert(output.getvalue() == u''.join(str(i) for i in range(1024)))
 
     Testing fec algorithm correctness:
 
@@ -77,7 +74,7 @@ class FecReceiver(object):
     ...         if media.sequence != 0:
     ...             receiver.putMedia(media, True)
     >>> fec = FecPacket.compute(1, FecPacket.XOR, FecPacket.COL, L, D, [p[0] for p in matrix[0:]])
-    >>> print 'dir=%s snbase=%s offset=%s na=%s' % (fec.direction, fec.snbase, fec.offset, fec.na)
+    >>> print u'dir={0} snbase={1} offset={2} na={3}'.format(fec.direction, fec.snbase, fec.offset, fec.na)
     dir=0 snbase=0 offset=4 na=5
     >>> receiver.putFec(fec)
     >>> print receiver
@@ -102,31 +99,29 @@ class FecReceiver(object):
     True
     """
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constants >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constants >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-    ER_DELAY_UNITS = "Unknown delay units '%s'"
-    ER_DIRECTION = 'FEC packet direction is neither COL nor ROW : %s'
-    ER_FLUSHING = 'Currently flushing buffers'
-    ER_MISSING_COUNT = 'They are %s missing media packet, expected one (1)'
-    ER_COL_MISMATCH = 'Column FEC packet n°%s, expected n°%s'
-    ER_COL_OVERWRITE = 'Another column FEC packet is already registered to protect media packet n°%s'
-    ER_ROW_MISMATCH = 'Row FEC packet n°%s, expected n°%s'
-    ER_ROW_OVERWRITE = 'Another row FEC packet is already registered to protect media packet n°%s'
-    ER_GET_COL_CASCADE = (
-        'Column FEC cascade : Unable to compute sequence # of the media packet to recover\n%s\n')
-    ER_GET_ROW_CASCADE = (
-        'Row FEC cascade : Unable to compute sequence # of the media packet to recover\n%s\n')
-    ER_NULL_COL_CASCADE = 'Column FEC cascade : Unable to find linked entry in crosses buffer'
-    ER_NULL_ROW_CASCADE = 'Row FEC cascade : Unable to find linked entry in crosses buffer'
-    ER_STARTUP = 'Current position still not initialized (startup state)'
-    ER_VALID_RTP_MP2TS = 'packet is not valid (expected RTP packet + MPEG2-TS payload)'
-    ER_VALID_RTP = 'packet is not valid (expected RTP packet)'
+    ER_DELAY_UNITS = u"Unknown delay units '{0}'"
+    ER_DIRECTION = u'FEC packet direction is neither COL nor ROW : {0}'
+    ER_FLUSHING = u'Currently flushing buffers'
+    ER_MISSING_COUNT = u'They are {0} missing media packet, expected one (1)'
+    ER_COL_MISMATCH = u'Column FEC packet n°{0}, expected n°{1}'
+    ER_COL_OVERWRITE = u'Another column FEC packet is already registered to protect media packet n°{0}'
+    ER_ROW_MISMATCH = u'Row FEC packet n°{0}, expected n°{1}'
+    ER_ROW_OVERWRITE = u'Another row FEC packet is already registered to protect media packet n°{0}'
+    ER_GET_COL_CASCADE = u'Column FEC cascade : Unable to compute sequence # of the media packet to recover\n{0}\n'
+    ER_GET_ROW_CASCADE = u'Row FEC cascade : Unable to compute sequence # of the media packet to recover\n{0}\n'
+    ER_NULL_COL_CASCADE = u'Column FEC cascade : Unable to find linked entry in crosses buffer'
+    ER_NULL_ROW_CASCADE = u'Row FEC cascade : Unable to find linked entry in crosses buffer'
+    ER_STARTUP = u'Current position still not initialized (startup state)'
+    ER_VALID_RTP_MP2TS = u'packet is not valid (expected RTP packet + MPEG2-TS payload)'
+    ER_VALID_RTP = u'packet is not valid (expected RTP packet)'
 
-    DELAY_NAMES = ['packets', 'seconds']
+    DELAY_NAMES = [u'packets', u'seconds']
     DELAY_RANGE = range(len(DELAY_NAMES))
     PACKETS, SECONDS = DELAY_RANGE
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructors >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructors >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     def __init__(self, output):
         u"""
@@ -149,7 +144,7 @@ class FecReceiver(object):
         >>> receiver = FecReceiver(output)
         """
         if not output:
-            raise ValueError('output is None')
+            raise ValueError(to_bytes(u'output is None'))
         # Media packets storage, medias[media seq] = media pkt
         self.medias = {}
         self.startup = True    # Indicate that actual position must be initialized
@@ -184,48 +179,42 @@ class FecReceiver(object):
         self.max_row = 0       # Largest amount of stored elements in the rows buffer
         self.lostogram = {}    # Statistics about lost medias
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     @property
     def current_delay(self):
-        u"""
-        TODO
-        """
+        u"""TODO"""
         if len(self.medias) == 0:
             return 0
         if self.delay_units == FecReceiver.PACKETS:
             return len(self.medias)
         elif self.delay_units == FecReceiver.SECONDS:
             raise NotImplementedError()
-        raise ValueError(FecReceiver.ER_DELAY_UNITS % self.delay_units)
+        raise ValueError(to_bytes(FecReceiver.ER_DELAY_UNITS.format(self.delay_units)))
             #return medias.lastEntry().getValue().getTime() - medias.firstEntry().getValue().getTime()
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Functions >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Functions >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     def setDelay(self, value, units):
-        u"""
-        Set desired size for the internal media buffer.
-        """
+        u"""Set desired size for the internal media buffer."""
         if units == FecReceiver.PACKETS:
             self.delay_value = value
             self.delay_units = units
         elif units == FecReceiver.SECONDS:
             raise NotImplementedError()
         else:
-            raise ValueError(FecReceiver.ER_DELAY_UNITS % units)
+            raise ValueError(to_bytes(FecReceiver.ER_DELAY_UNITS.format(units)))
 
     def putMedia(self, media, onlyMP2TS):
-        u"""
-        Put an incoming media packet.
-        """
+        u"""Put an incoming media packet."""
         if self.flushing:
-            raise ValueError(FecReceiver.ER_FLUSHING)
+            raise ValueError(to_bytes(FecReceiver.ER_FLUSHING))
         if onlyMP2TS:
             if not media.validMP2T:
-                raise ValueError(FecReceiver.ER_VALID_RTP_MP2TS)
+                raise ValueError(to_bytes(FecReceiver.ER_VALID_RTP_MP2TS))
         else:
             if not media.valid:
-                raise ValueError(FecReceiver.ER_VALID_RTP)
+                raise ValueError(to_bytes(FecReceiver.ER_VALID_RTP))
 
         # Put the media packet into medias buffer
         if media.sequence in self.medias:
@@ -244,24 +233,23 @@ class FecReceiver(object):
 
     def putFec(self, fec):
         u"""
-        Put an incoming FEC packet, the algorithm will do the following according to these
-        scenarios:
+        Put an incoming FEC packet, the algorithm will do the following according to these scenarios:
 
         1. The fec packet is useless if none of the protected media packets is missing
         2. Only on media packet missing, fec packet is able to recover it now !
         3. More than one media packet is missing, fec packet stored for future recovery
         """
         if self.flushing:
-            raise ValueError(FecReceiver.ER_FLUSHING)
+            raise ValueError(to_bytes(FecReceiver.ER_FLUSHING))
         if not fec.valid:
-            raise ValueError('Invalid FEC packet')
+            raise ValueError(to_bytes(u'Invalid FEC packet'))
 
         if fec.direction == FecPacket.COL:
             self.col_received += 1
         elif fec.direction == FecPacket.ROW:
             self.row_received += 1
         else:
-            raise ValueError(FecReceiver.ER_DIRECTION % fec.direction)
+            raise ValueError(FecReceiver.ER_DIRECTION.format(fec.direction))
         cross = None
         media_lost = 0
         media_max = (fec.snbase + fec.na * fec.offset) & RtpPacket.S_MASK
@@ -273,21 +261,21 @@ class FecReceiver(object):
                 # TODO
                 cross = self.crosses.get(media_test)
                 if not cross:
-                    cross = {'col_sequence': None, 'row_sequence': None}
+                    cross = {u'col_sequence': None, u'row_sequence': None}
                     self.crosses[media_test] = cross
                     if len(self.crosses) > self.max_cross:
                         self.max_cross = len(self.crosses)
                 # Register the fec packet able to recover the missing media packet
                 if fec.direction == FecPacket.COL:
-                    if cross['col_sequence']:
-                        raise ValueError(FecReceiver.ER_COL_OVERWRITE % media_lost)
-                    cross['col_sequence'] = fec.sequence
+                    if cross[u'col_sequence']:
+                        raise ValueError(to_bytes(FecReceiver.ER_COL_OVERWRITE.format(media_lost)))
+                    cross[u'col_sequence'] = fec.sequence
                 elif fec.direction == FecPacket.ROW:
-                    if cross['row_sequence']:
-                        raise ValueError(FecReceiver.ER_ROW_OVERWRITE % media_lost)
-                    cross['row_sequence'] = fec.sequence
+                    if cross[u'row_sequence']:
+                        raise ValueError(to_bytes(FecReceiver.ER_ROW_OVERWRITE.format(media_lost)))
+                    cross[u'row_sequence'] = fec.sequence
                 else:
-                    raise ValueError(FecReceiver.ER_FEC_DIRECTION % fec.direction)
+                    raise ValueError(to_bytes(FecReceiver.ER_FEC_DIRECTION.format(fec.direction)))
                 fec.setMissing(media_test)
             media_test = (media_test + fec.offset) & RtpPacket.S_MASK
         if fec.L != 0:
@@ -299,8 +287,8 @@ class FecReceiver(object):
             return
         # FIXME check if 10*delay_value is a good way to avoid removing early fec packets !
         # The fec packet is useless if it needs an already output'ed media packet to do recovery
-        drop = not FecReceiver.ValidityWindow(fec.snbase, self.position, (self.position +
-                                              10 * self.delay_value) & RtpPacket.S_MASK)
+        drop = not FecReceiver.ValidityWindow(fec.snbase, self.position,
+                                              (self.position + 10 * self.delay_value) & RtpPacket.S_MASK)
         if fec.direction == FecPacket.COL:
             if drop:
                 self.col_dropped += 1
@@ -322,9 +310,7 @@ class FecReceiver(object):
         # [3] More than one media packet is missing, fec packet stored for future recovery
 
     def flush(self):
-        u"""
-        Flush all buffers and output media packets to registered output (``self.output``).
-        """
+        u"""Flush all buffers and output media packets to registered output (``self.output``)."""
         try:
             self.flushing = True
             self.out()
@@ -333,50 +319,47 @@ class FecReceiver(object):
             self.flushing = False
 
     def cleanup(self):
-        u"""
-        Remove FEC packets that are stored / waiting but useless.
-        """
+        u"""Remove FEC packets that are stored / waiting but useless."""
         if self.flushing:
-            raise ValueError(FecReceiver.ER_FLUSHING)
+            raise ValueError(to_bytes(FecReceiver.ER_FLUSHING))
         if self.startup:
-            raise ValueError(FecReceiver.ER_STARTUP)
+            raise ValueError(to_bytes(FecReceiver.ER_STARTUP))
         if self.delay_units == FecReceiver.PACKETS:
             start, end = self.position, (self.position + self.delay_value) & RtpPacket.S_MASK
             for media_sequence in self.crosses.keys:
                 if not self.ValidityWindow(media_sequence, start, end):
                     cross = self.crosses[media_sequence]
-                    del self.cols[cross['col_sequence']]
-                    del self.rows[cross['row_sequence']]
+                    del self.cols[cross[u'col_sequence']]
+                    del self.rows[cross[u'row_sequence']]
                     del self.crosses[media_sequence]
         elif self.delay_units == FecReceiver.SECONDS:
             raise NotImplementedError()
-        raise ValueError(FecReceiver.ER_DELAY_UNITS % self.delay_units)
+        raise ValueError(to_bytes(FecReceiver.ER_DELAY_UNITS.format(self.delay_units)))
 
     def recoverMediaPacket(self, media_sequence, cross, fec):
-        u"""
-        Recover a missing media packet helped by a FEC packet, this method is also called to
-        register an incoming media packet if it is registered as missing.
-        """
+        u"""Recover a missing media packet helped by a FEC packet, this method is also called to register an incoming
+        media packet if it is registered as missing."""
+
         recovered_by_fec = not fec is None
 
         # Read and remove "cross" it from the buffer
-        col_sequence = cross['col_sequence']
-        row_sequence = cross['row_sequence']
+        col_sequence = cross[u'col_sequence']
+        row_sequence = cross[u'row_sequence']
         del self.crosses[media_sequence]
 
         # Recover the missing media packet and remove any useless linked fec packet
         if recovered_by_fec:
             if len(fec.missing) != 1:
-                raise NotImplementedError(FecReceiver.ER_MISSING_COUNT % len(fec.missing))
+                raise NotImplementedError(FecReceiver.ER_MISSING_COUNT.format(len(fec.missing)))
             if fec.direction == FecPacket.COL and fec.sequence != col_sequence:
-                raise NotImplementedError(FecReceiver.ER_COL_MISMATCH % (fec.sequence, col_sequence))
+                raise NotImplementedError(FecReceiver.ER_COL_MISMATCH.format(fec.sequence, col_sequence))
             if fec.direction == FecPacket.ROW and fec.sequence != row_sequence:
-                raise NotImplementedError(FecReceiver.ER_ROW_MISMATCH % (fec.sequence, row_sequence))
+                raise NotImplementedError(FecReceiver.ER_ROW_MISMATCH.format(fec.sequence, row_sequence))
 
             # Media packet recovery
             # > Copy fec packet fields into the media packet
-            media = RtpPacket.create(media_sequence, fec.timestamp_recovery,
-                                     fec.payload_type_recovery, fec.payload_recovery)
+            media = RtpPacket.create(media_sequence, fec.timestamp_recovery, fec.payload_type_recovery,
+                                     fec.payload_recovery)
             payload_size = fec.length_recovery
 
             # > recovered payload ^= all media packets linked to the fec packet
@@ -434,11 +417,11 @@ class FecReceiver(object):
                         self.recoverMediaPacket(cascade_media_sequence, cascade_cross, fec_col)
                     else:
                         raise NotImplementedError(
-                            'recoverMediaPacket(%s, %s, %s):\n%s\nmedia sequence : %s\n%s\n' %
-                            (media_sequence, cross, fec, FecReceiver.ER_NULL_COL_CASCADE,
-                             cascade_media_sequence, fec_col))
+                            to_bytes(u'recoverMediaPacket({0}, {1}, {2}):\n{3}\nmedia sequence : {4}\n{5}\n'.format(
+                            media_sequence, cross, fec, FecReceiver.ER_NULL_COL_CASCADE, cascade_media_sequence,
+                            fec_col)))
                 else:
-                    raise NotImplementedError(FecReceiver.ER_GET_COL_CASCADE % fec_col)
+                    raise NotImplementedError(FecReceiver.ER_GET_COL_CASCADE.format(fec_col))
 
         if fec_row:
             if len(fec_row.missing) == 1:
@@ -450,16 +433,14 @@ class FecReceiver(object):
                         self.recoverMediaPacket(cascade_media_sequence, cascade_cross, fec_row)
                     else:
                         raise NotImplementedError(
-                            '%s\nrecoverMediaPacket(%s, %s, %s):\nmedia sequence : %s\n%s\n' %
-                            (FecReceiver.ER_NULL_ROW_CASCADE, media_sequence, cross, fec,
-                             cascade_media_sequence, fec_row))
+                            to_bytes(u'{0}\nrecoverMediaPacket({1}, {2}, {3}):\nmedia sequence : {4}\n{5}\n'.format(
+                            FecReceiver.ER_NULL_ROW_CASCADE, media_sequence, cross, fec, cascade_media_sequence,
+                            fec_row)))
                 else:
-                    raise NotImplementedError(FecReceiver.ER_GET_ROW_CASCADE % fec_row)
+                    raise NotImplementedError(to_bytes(FecReceiver.ER_GET_ROW_CASCADE.format(fec_row)))
 
     def out(self):
-        u"""
-        TODO
-        """
+        u"""TODO"""
         units = FecReceiver.PACKETS if self.flushing else self.delay_units
         value = 0 if self.flushing else self.delay_value
         missing_count = 0
@@ -481,15 +462,15 @@ class FecReceiver(object):
                 cross = self.crosses.get(self.position)
                 if cross:
                     del self.crosses[self.position]
-                    if cross['col_sequence']:
-                        del self.cols[cross['col_sequence']]
-                    if cross['row_sequence']:
-                        del self.rows[cross['row_sequence']]
+                    if cross[u'col_sequence']:
+                        del self.cols[cross[u'col_sequence']]
+                    if cross[u'row_sequence']:
+                        del self.rows[cross[u'row_sequence']]
         # Extract packets to output in order to keep a 'certain' amount of them in the buffer
         elif units == FecReceiver.SECONDS:  # based on time stamps
             raise NotImplementedError()
         else:
-            raise ValueError(FecReceiver.ER_DELAY_UNITS % units)
+            raise ValueError(FecReceiver.ER_DELAY_UNITS.format(units))
         if missing_count in self.lostogram:
             self.lostogram[missing_count] = self.lostogram[missing_count] + 1
         else:
@@ -501,7 +482,7 @@ class FecReceiver(object):
 
         **Example usage**
 
-        >>> print FecReceiver('salut')
+        >>> print FecReceiver(u'salut')
         Name  Received Buffered Maximum Dropped
         Media        0        0       0
         Col          0        0       0       0
@@ -514,9 +495,9 @@ class FecReceiver(object):
         Current delay (can be set) : 0 packets
         FEC matrix size (LxD) : 0x0 = 0 packets
         """
-        delayFormat = '%.0f' if self.delay_units == FecReceiver.PACKETS else '%.2f'
+        delayFormat = u'%.0f' if self.delay_units == FecReceiver.PACKETS else u'%.2f'
         mDelay = (delayFormat % self.current_delay) + ' ' + FecReceiver.DELAY_NAMES[self.delay_units]
-        return ("Name  Received Buffered Maximum Dropped\n"
+        return (u"Name  Received Buffered Maximum Dropped\n"
                 "Media %8d%9d%8d\n"
                 "Col   %8d%9d%8d%8d\n"
                 "Row   %8d%9d%8d%8d\n"
@@ -543,18 +524,18 @@ class FecReceiver(object):
 
         **Example usage**
 
-        >>> print FecReceiver.computeColAddress('192.168.50.100:8000')
-        {'ip': '192.168.50.100', 'port': 8002}
-        >>> print FecReceiver.computeColAddress(IPSocket('50.0.0.7:4000'))
-        {'ip': '50.0.0.7', 'port': 4002}
+        >>> print FecReceiver.computeColAddress(u'192.168.50.100:8000')
+        {u'ip': u'192.168.50.100', u'port': 8002}
+        >>> print FecReceiver.computeColAddress(IPSocket(u'50.0.0.7:4000'))
+        {u'ip': u'50.0.0.7', u'port': 4002}
         >>> print FecReceiver.computeColAddress('salut')
         Traceback (most recent call last):
             ....
-        ValueError: 'salut' is not a valid IP socket.
+        ValueError: salut is not a valid IP socket.
         """
         if not isinstance(media_socket, dict):
             media_socket = IPSocket(media_socket)
-        media_socket['port'] += 2
+        media_socket[u'port'] += 2
         return media_socket
 
     @staticmethod
@@ -564,18 +545,18 @@ class FecReceiver(object):
 
         **Example usage**
 
-        >>> print FecReceiver.computeRowAddress('192.168.50.100:8000')
-        {'ip': '192.168.50.100', 'port': 8004}
-        >>> print FecReceiver.computeRowAddress(IPSocket('50.0.0.7:4000'))
-        {'ip': '50.0.0.7', 'port': 4004}
-        >>> print FecReceiver.computeRowAddress('salut')
+        >>> print FecReceiver.computeRowAddress(u'192.168.50.100:8000')
+        {u'ip': u'192.168.50.100', u'port': 8004}
+        >>> print FecReceiver.computeRowAddress(IPSocket(u'50.0.0.7:4000'))
+        {u'ip': u'50.0.0.7', u'port': 4004}
+        >>> print FecReceiver.computeRowAddress(u'salut')
         Traceback (most recent call last):
             ....
-        ValueError: 'salut' is not a valid IP socket.
+        ValueError: salut is not a valid IP socket.
         """
         if not isinstance(media_socket, dict):
             media_socket = IPSocket(media_socket)
-        media_socket['port'] += 4
+        media_socket[u'port'] += 4
         return media_socket
 
     @staticmethod
@@ -607,9 +588,3 @@ class FecReceiver(object):
             return current >= start and current <= end
         else:
             return current <= end or current >= start
-
-if __name__ == '__main__':
-    print('Testing FecReceiver with doctest')
-    import doctest
-    doctest.testmod(verbose=False)
-    print ('OK')

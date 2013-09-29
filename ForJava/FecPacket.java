@@ -1,30 +1,28 @@
-/**************************************************************************************************\
-        OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
+/**********************************************************************************************************************\
+                    OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
 
-    Description : FEC packet
-    Authors     : David Fischer
-    Contact     : david.fischer.ch@gmail.com / david.fischer@hesge.ch
-    Copyright   : 2008-2013 smpte2022lib Team. All rights reserved.
-    Sponsoring  : Developed for a HES-SO CTI Ra&D project called GaVi
-                  Haute école du paysage, d'ingénierie et d'architecture @ Genève
-                  Telecommunications Laboratory
-\**************************************************************************************************/
+    Description   : FEC packet
+   Main Developer : David Fischer (david.fischer.ch@gmail.com)
+   Copyright      : Copyright (c) 2008-2013 smpte2022lib Team. All rights reserved.
+   Sponsoring     : Developed for a HES-SO CTI Ra&D project called GaVi
+                    Haute école du paysage, d'ingénierie et d'architecture @ Genève
+                    Telecommunications Laboratory
+
+\**********************************************************************************************************************/
 /*
   This file is part of smpte2022lib.
 
-  This project is free software: you can redistribute it and/or modify it under the terms of the
-  GNU General Public License as published by the Free Software Foundation, either version 3 of the
-  License, or (at your option) any later version.
-
-  This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  This project is free software: you can redistribute it and/or modify it under the terms of the EUPL v. 1.1 as provided
+  by the European Commission. This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
   without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-  See the GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License along with this project.
-  If not, see <http://www.gnu.org/licenses/>
+  See the European Union Public License for more details.
 
-  Retrieved from:
-    git clone git://github.com/davidfischer-ch/smpte2022lib.git
+  You should have received a copy of the EUPL General Public License along with this project.
+  If not, see he EUPL licence v1.1 is available in 22 languages:
+      22-07-2013, <https://joinup.ec.europa.eu/software/page/eupl/licence-eupl>
+
+  Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 */
 
 package smpte2022lib;
@@ -36,11 +34,11 @@ import java.util.List;
 
 //FIXME error message is set in the constructor but it is not updated if packet become valid !
 
-//**************************************************************************************************
+//**********************************************************************************************************************
 //TODO
 public class FecPacket
 {
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constants >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constants >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public static String ER_PAYLOAD_TYPE = "RTP Header : Payload type must be set to 96";
 	public static String ER_EXTENDED     = "SMPTE 2022-1 Header : Extended must be set to one";
@@ -69,12 +67,12 @@ public class FecPacket
 	public static final byte I_MASK  = (byte)0x07;
 	public static final byte DYNAMIC_PT = 96; // Dynamic payload type
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Data Types >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Data Types >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public enum Direction { COL /*0*/, ROW /*1*/ };
 	public enum Algorithm { XOR /*0*/, Hamming /*1*/, Reed_Solomon /*2*/ };
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Fields >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Fields >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	// Status
 	protected List<String> ctorErrors;
@@ -97,7 +95,7 @@ public class FecPacket
 	public boolean extended; //  1 bit
 	public boolean n;        //  1 bit
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructors >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructors >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	protected FecPacket() {}
 
@@ -221,7 +219,7 @@ public class FecPacket
 		}
 	}
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public boolean isValid()
 	{
@@ -252,7 +250,7 @@ public class FecPacket
 		return payloadRecovery == null ? 0 : payloadRecovery.length;
 	}
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Functions >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Functions >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public String toString()
 	{
@@ -271,7 +269,7 @@ public class FecPacket
 			"payload recovery size = "+getPayloadSize()+"\n";
 	}
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Static >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Static >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public static int UnitTest() // FIXME put this in a real unit test
 	{
@@ -280,7 +278,7 @@ public class FecPacket
 
 		if (!RtpPacket.UnitTest()) return 1; // RtPacket unit test must be successful
 
-		// Testing header fields value (based on packet 3 of capture DCM_FEC_2D_6_10.pcap) ---------
+		// Testing header fields value (based on packet 3 of capture DCM_FEC_2D_6_10.pcap) -----------------------------
 		header = new byte[]
 		{
 			// RTP header
@@ -306,7 +304,7 @@ public class FecPacket
 			fec.payloadTypeRecovery != 0             || fec.timestampRecovery !=  7850         ||
 			fec.lengthRecovery      != 0 || fec.payloadRecovery.length != 7*188) return 3;
 
-		// Testing header fields value (based on packet 5 of capture DCM_FEC_2D_6_10.pcap) ---------
+		// Testing header fields value (based on packet 5 of capture DCM_FEC_2D_6_10.pcap) -----------------------------
 		header = new byte[]
 		{
 			// RTP header
@@ -332,7 +330,7 @@ public class FecPacket
 			fec.payloadTypeRecovery != 0             || fec.timestampRecovery !=   878         ||
 			fec.lengthRecovery      != 0 || fec.payloadRecovery.length != 7*188) return 5;
 
-		// Testing fec packet constructor (based on source RTP packets) ----------------------------
+		// Testing fec packet constructor (based on source RTP packets) ------------------------------------------------
 
 		byte L = 4, D = 5, OFF = 2;
 		RtpPacket[][] matrix = Utils.createRandomRtpPacketsMatrix(L, D, 50, 100);

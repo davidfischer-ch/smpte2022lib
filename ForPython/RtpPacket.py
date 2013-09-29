@@ -1,34 +1,30 @@
-#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#**************************************************************************************************#
-#       OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
+#**********************************************************************************************************************#
+#                   OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
 #
-#   Description : SMPTE 2022-1 FEC Library
-#   Authors     : David Fischer
-#   Contact     : david.fischer.ch@gmail.com / david.fischer@hesge.ch
-#   Copyright   : 2008-2013 smpte2022lib Team. All rights reserved.
-#   Sponsoring  : Developed for a HES-SO CTI Ra&D project called GaVi
-#                 Haute école du paysage, d'ingénierie et d'architecture @ Genève
-#                 Telecommunications Laboratory
-#**************************************************************************************************#
+#  Description    : SMPTE 2022-1 FEC Library
+#  Main Developer : David Fischer (david.fischer.ch@gmail.com)
+#  Copyright      : Copyright (c) 2008-2013 smpte2022lib Team. All rights reserved.
+#  Sponsoring     : Developed for a HES-SO CTI Ra&D project called GaVi
+#                   Haute école du paysage, d'ingénierie et d'architecture @ Genève
+#                   Telecommunications Laboratory
 #
-#  This file is part of smpte2022lib.
+#**********************************************************************************************************************#
 #
-#  This project is free software: you can redistribute it and/or modify it under the terms of the
-#  GNU General Public License as published by the Free Software Foundation, either version 3 of the
-#  License, or (at your option) any later version.
+# This file is part of smpte2022lib.
 #
-#  This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-#  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-#  See the GNU General Public License for more details.
+# This project is free software: you can redistribute it and/or modify it under the terms of the EUPL v. 1.1 as provided
+# by the European Commission. This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-#  You should have received a copy of the GNU General Public License along with this project.
-#  If not, see <http://www.gnu.org/licenses/>
+# See the European Union Public License for more details.
 #
-#  Retrieved from:
-#    git clone git://github.com/davidfischer-ch/smpte2022lib.git
+# You should have received a copy of the EUPL General Public License along with this project.
+# If not, see he EUPL licence v1.1 is available in 22 languages:
+#     22-07-2013, <https://joinup.ec.europa.eu/software/page/eupl/licence-eupl>
 #
+# Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 
 import struct
 
@@ -76,12 +72,12 @@ class RtpPacket(object):
         +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     """
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constants >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constants >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-    ER_VERSION = 'RTP Header : Version must be set to 2'
-    ER_PADDING_LENGTH = 'RTP Header : Bad padding length'
-    ER_EXTENSION_LENGTH = 'RTP Header : Bad extension length'
-    ER_PAYLOAD = 'RTP packet must have a payload'
+    ER_VERSION = u'RTP Header : Version must be set to 2'
+    ER_PADDING_LENGTH = u'RTP Header : Bad padding length'
+    ER_EXTENSION_LENGTH = u'RTP Header : Bad extension length'
+    ER_PAYLOAD = u'RTP packet must have a payload'
 
     HEADER_LENGTH = 12
     V_MASK = 0xc0
@@ -97,7 +93,7 @@ class RtpPacket(object):
     S_MASK = 0x0000ffff
     TS_MASK = 0xffffffff
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     @property
     def valid(self):
@@ -126,11 +122,11 @@ class RtpPacket(object):
 
         >>> rtp = RtpPacket(bytearray(RtpPacket.HEADER_LENGTH-1), RtpPacket.HEADER_LENGTH-1)
         >>> print(rtp.errors)
-        ['RTP Header : Version must be set to 2', 'RTP packet must have a payload']
+        [u'RTP Header : Version must be set to 2', u'RTP packet must have a payload']
 
         Testing a valid RTP packet with a MPEG2-TS payload:
 
-        >>> rtp = RtpPacket.create(6, 777, RtpPacket.MP2T_PT, 'salut')
+        >>> rtp = RtpPacket.create(6, 777, RtpPacket.MP2T_PT, u'salut')
         >>> print(rtp.errors)
         []
         """
@@ -157,7 +153,7 @@ class RtpPacket(object):
 
         **Example usage**
 
-        >>> rtp = RtpPacket.create(6, 777, RtpPacket.MP2T_PT, 'salut')
+        >>> rtp = RtpPacket.create(6, 777, RtpPacket.MP2T_PT, u'salut')
         >>> print(rtp.header_size)
         12
         """
@@ -170,7 +166,7 @@ class RtpPacket(object):
 
         **Example usage**
 
-        >>> rtp = RtpPacket.create(6, 777, RtpPacket.MP2T_PT, 'salut')
+        >>> rtp = RtpPacket.create(6, 777, RtpPacket.MP2T_PT, u'salut')
         >>> print(rtp.payload_size)
         5
         """
@@ -207,7 +203,7 @@ class RtpPacket(object):
         payload size = 4
         >>> header = rtp.header_bytes
         >>> assert(len(header) == 12)
-        >>> print(''.join(' %02x' % b for b in header))
+        >>> print(u''.join(' %02x' % b for b in header))
          80 21 00 06 00 00 03 09 00 00 00 00
         >>> header += rtp.payload
         >>> rtp2 = RtpPacket(header, len(header))
@@ -230,7 +226,7 @@ class RtpPacket(object):
         payload size = 1023
         >>> header = rtp.header_bytes
         >>> assert(len(header) == 12)
-        >>> print(''.join(' %02x' % b for b in header))
+        >>> print(u''.join(' %02x' % b for b in header))
          80 60 ff ff ff ff ff ff 00 00 00 00
         >>> header += rtp.payload
         >>> rtp2 = RtpPacket(header, len(header))
@@ -257,7 +253,7 @@ class RtpPacket(object):
     def bytes(self):
         return self.header_bytes + self.payload
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructor >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructor >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     def __init__(self, bytes, length):
         u"""
@@ -369,7 +365,7 @@ class RtpPacket(object):
         # And finally ... The payload !
         self.payload = bytes[offset:length]
 
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Functions >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Functions >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 #    public int compareTo(RtpPacket pPacket):
 #        BEFORE = -1
@@ -398,7 +394,7 @@ class RtpPacket(object):
 
         **Example usage**
 
-        >>> p = RtpPacket.create(10, 1024, RtpPacket.MP2T_PT, 'The payload string')
+        >>> p = RtpPacket.create(10, 1024, RtpPacket.MP2T_PT, u'The payload string')
         >>> q = RtpPacket.create(11, 1028, RtpPacket.MP2T_PT, bytearray.fromhex(u'00 11 22 33'))
         >>> r = RtpPacket.create(11, 1028, RtpPacket.DYNAMIC_PT, bytearray.fromhex(u'cc aa ff ee'))
         >>> assert(p.validMP2T and q.validMP2T and r.valid)
@@ -434,7 +430,7 @@ class RtpPacket(object):
 
         **Example usage**
 
-        >>> rtp = RtpPacket.create(6, 777, RtpPacket.MP2T_PT, 'salut les loulous')
+        >>> rtp = RtpPacket.create(6, 777, RtpPacket.MP2T_PT, u'salut les loulous')
         >>> print(rtp)
         version      = 2
         errors       = []
@@ -450,25 +446,18 @@ class RtpPacket(object):
         csrc count   = 0
         payload size = 17
         """
-        return ("version      = %s\n"
-                "errors       = %s\n"
-                "padding      = %s\n"
-                "extension    = %s\n"
-                "marker       = %s\n"
-                "payload type = %s\n"
-                "sequence     = %s\n"
-                "timestamp    = %s\n"
-                "clock rate   = %s\n"
-                "time         = %s\n"
-                "ssrc         = %s\n"
-                "csrc count   = %s\n"
-                "payload size = %s" %
-                (self.version, self.errors, self.padding, self.extension, self.marker,
-                 self.payload_type, self.sequence, self.timestamp, self.clock_rate,
-                 self.time, self.ssrc, len(self.csrc), self.payload_size))
-
-if __name__ == '__main__':
-    print('Testing RtpPacket with doctest')
-    import doctest
-    doctest.testmod(verbose=False)
-    print ('OK')
+        return (u"""version      = {0}
+errors       = {1}
+padding      = {2}
+extension    = {3}
+marker       = {4}
+payload type = {5}
+sequence     = {6}
+timestamp    = {7}
+clock rate   = {8}
+time         = {9}
+ssrc         = {10}
+csrc count   = {11}
+payload size = {12}""".format(self.version, self.errors, self.padding, self.extension, self.marker,
+                              self.payload_type, self.sequence, self.timestamp, self.clock_rate,
+                              self.time, self.ssrc, len(self.csrc), self.payload_size))

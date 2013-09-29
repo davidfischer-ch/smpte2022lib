@@ -1,50 +1,48 @@
-/**************************************************************************************************\
-        OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
+/**********************************************************************************************************************\
+                    OPTIMIZED AND CROSS PLATFORM SMPTE 2022-1 FEC LIBRARY IN C, JAVA, PYTHON, +TESTBENCH
 
-    Description : FEC packet stored for future usage
-    Authors     : David Fischer
-    Contact     : david.fischer.ch@gmail.com / david.fischer@hesge.ch
-    Copyright   : 2008-2013 smpte2022lib Team. All rights reserved.
-    Sponsoring  : Developed for a HES-SO CTI Ra&D project called GaVi
-                  Haute école du paysage, d'ingénierie et d'architecture @ Genève
-                  Telecommunications Laboratory
-\**************************************************************************************************/
+    Description   : FEC packet stored for future usage
+   Main Developer : David Fischer (david.fischer.ch@gmail.com)
+   Copyright      : Copyright (c) 2008-2013 smpte2022lib Team. All rights reserved.
+   Sponsoring     : Developed for a HES-SO CTI Ra&D project called GaVi
+                    Haute école du paysage, d'ingénierie et d'architecture @ Genève
+                    Telecommunications Laboratory
+
+\**********************************************************************************************************************/
 /*
   This file is part of smpte2022lib.
 
-  This project is free software: you can redistribute it and/or modify it under the terms of the
-  GNU General Public License as published by the Free Software Foundation, either version 3 of the
-  License, or (at your option) any later version.
-
-  This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  This project is free software: you can redistribute it and/or modify it under the terms of the EUPL v. 1.1 as provided
+  by the European Commission. This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
   without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-  See the GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License along with this project.
-  If not, see <http://www.gnu.org/licenses/>
+  See the European Union Public License for more details.
 
-  Retrieved from:
-    git clone git://github.com/davidfischer-ch/smpte2022lib.git
+  You should have received a copy of the EUPL General Public License along with this project.
+  If not, see he EUPL licence v1.1 is available in 22 languages:
+      22-07-2013, <https://joinup.ec.europa.eu/software/page/eupl/licence-eupl>
+
+  Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 */
 
 package smpte2022lib;
 
-// *************************************************************************************************
+// *********************************************************************************************************************
 // TODO
 public class FecWait extends FecPacket
 {
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constants >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constants >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public static String ER_INDEX = "Unable to get missing media packet index";
 	public static String ER_J =
 		"Unable to find a suitable j € N that satisfy : pMediaSequence = snbase + j*offset";
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Fields >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Fields >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	protected int      missingCount; //. Amount of missing (protected) media packets
 	protected BitField missingValue; //. Every bit = flag (missing ?) of any protected media packet
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructors >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructors >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public FecWait(byte[] pBytes, int pLength)
 	{
@@ -84,7 +82,7 @@ public class FecWait extends FecPacket
 		missingValue = new BitField();
 	}
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Properties >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public int getMissingSequence(int pIndex)
 	{
@@ -147,7 +145,7 @@ public class FecWait extends FecPacket
 			"missing value       = "+values+"\n";
 	}
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Static >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Static >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	public static int UnitTest() // FIXME put this in a real unit test
 	{
@@ -169,8 +167,8 @@ public class FecWait extends FecPacket
 		if (w.setRecovered(3) != 3 || w.missingCount != 0) return 4;
 
 		// Testing set/get of multiple missing values (including re-setting of a value)
-		if (w.setMissing(6) != 4 || w.setMissing(w.snbase) != 0 ||
-			w.setMissing(w.snbase+w.offset) != 1 || w.setMissing(w.snbase+w.offset) != 1) return 5;
+		if (w.setMissing(6) != 4 || w.setMissing(w.snbase) != 0 || w.setMissing(w.snbase+w.offset) != 1 ||
+			w.setMissing(w.snbase+w.offset) != 1) return 5;
 		if (w.getMissingSequence(1) != w.snbase || w.getMissingSequence(2) != w.snbase+w.offset ||
 			w.getMissingSequence(3) != 6 || w.missingCount != 3) return 6;
 
