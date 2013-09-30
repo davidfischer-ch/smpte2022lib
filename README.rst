@@ -13,3 +13,8 @@ Initial goal of the project was to help VLC and others by implementing a C/C++ R
 Nowadays I focus on using the newer Java and Python implementations for some Ra&D projects using RTP streams.
 
 Please read generated documentation under Docs/build/html/index.html
+
+Remark
+------
+
+The python implementation is now part of `pyutils <https://github.com/davidfischer-ch/pyutils/>`_
