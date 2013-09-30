@@ -1,15 +1,6 @@
-.. |goal| replace:: Resume.pdf
-.. _goal: ForC_old/Resume.pdf
-
-.. |doxy| replace:: DoxyCode/html/index.html
-.. _doxy: ForC_old/DoxyCode/html/index.html
-
-.. _fastxor_so: http://stackoverflow.com/questions/15459684/transmission-bytearray-from-python-to-c-and-return-it
-.. |fastxor_so| replace:: Transmission bytearray from Python to C and return it
 
 .. _CodeBlocks: http://www.codeblocks.org/
 .. _MinGW: http://www.mingw.org/
-.. _Python: http://www.python.org/
 .. _VLC: http://www.videolan.org/vlc/index.html
 
 smpte2022lib
@@ -30,7 +21,8 @@ ForPython
 ---------
 
 I developed this version to generate SMPTE 2022-1 FEC streams from sniffed RTP media stream.
-This implementation is now part of `pyutils <https://github.com/davidfischer-ch/pyutils/>`_
+
+This implementation is now part of `pyutils <https://github.com/davidfischer-ch/pyutils/>`_.
 
 ForJava
 -------
@@ -52,10 +44,7 @@ This is the first (abandon-ware) implementation of the library.
 
 I do not use it anymore and I really think that this implementation needs some heavy refactoring.
 
-You can read these files if you understand French :
-
-* Project's goals : |goal|_.
-* Project's doxygen : |doxy|_.
+You can read the `resume <ForC_old/Documents/Resume.pdf>`_ of the project files if you understand French.
 
 Don't hesitate to contact me to get further explanations.
 
