@@ -13,16 +13,16 @@ Brief description
 
 SMPTE 2022-1 is a forward error correction standard for real-time video/audio (RTP) transport over IP networks.
 
-Initial goal of the project was to help VLC and others by implementing a C/C++ RTP / SMPTE 2022-1 FEC streams receiver.
+Initial goal of the project was to help VLC and others to implement this FEC algorithm by implementing a standalone C/C++ SMPTE 2022-1 FEC streams generator and receiver.
 
 Nowadays I focus on using the newer Java and Python implementations for some Ra&D projects using RTP streams.
 
 ForPython
 ---------
 
-I developed this version to generate SMPTE 2022-1 FEC streams from sniffed RTP media stream.
+I developed this version to generate SMPTE 2022-1 FEC streams from a sniffed RTP media stream.
 
-This implementation is now part of `pyutils <https://github.com/davidfischer-ch/pyutils/>`_.
+This implementation is now part of `pyutils <https://github.com/davidfischer-ch/pyutils/>`_ (see `commit <https://github.com/davidfischer-ch/pyutils/commit/c8346c939cf6a8791e92e4b7b3cc72e67c82d0da>`_).
 
 ForJava
 -------
@@ -54,20 +54,20 @@ GNU/Linux (e.g. Ubuntu 64)
 Compiling step by step
 ^^^^^^^^^^^^^^^^^^^^^^
 
-* install CodeBlocks_ and g++ with ``sudo apt-get install codeblocks g++`` ;
-* open file ``ForC_old/CodeBlocks/VLC-SMPTE.workspace`` with CodeBlocks_ ;
-* double click on project **Smpte-2022-** in CodeBlocks_ IDE and Ctrl+F11 to compile ;
-* double click on project **FecGenerator**    in CodeBlocks_ IDE and Ctrl+F11 to compile ;
-* double click on project **ErrorsGenerator** in CodeBlocks_ IDE and Ctrl+F11 to compile ;
-* double click on project **FecDecoder**      in CodeBlocks_ IDE and Ctrl+F11 to compile ;
+* install CodeBlocks_ and g++ with ``sudo apt-get install codeblocks g++``
+* open file ``ForC_old/CodeBlocks/VLC-SMPTE.workspace`` with CodeBlocks_
+* double click on project **Smpte-2022-** in CodeBlocks_ IDE and Ctrl+F11 to compile
+* double click on project **FecGenerator**    in CodeBlocks_ IDE and Ctrl+F11 to compile
+* double click on project **ErrorsGenerator** in CodeBlocks_ IDE and Ctrl+F11 to compile
+* double click on project **FecDecoder**      in CodeBlocks_ IDE and Ctrl+F11 to compile
 
 Testing step by step
 ^^^^^^^^^^^^^^^^^^^^
 
-* open a terminal in path ``ForC_old/Release-linux64`` ;
-* execute ``sh script_example.sh "source_file_name"`` ;
-* read logs of each module ;
-* compare ``*.raw`` output file (without any error recovery) and ``*.david`` output file (recovered by SMPTE 2022-1 library) ;
+* open a terminal in path ``ForC_old/Release-linux64``
+* execute ``sh script_example.sh "source_file_name"``
+* read logs of each module
+* compare ``*.raw`` output file (without any error recovery) and ``*.david`` output file (recovered by SMPTE 2022-1 library)
 * execute each module with different options :
    - like this : ``source_file -> FecGenerator -> FecDecoder -> results_files``
    - or like this : ``source_file -> FecGenerator -> ErrorsGenerator -> FecDecoder -> results_files``
