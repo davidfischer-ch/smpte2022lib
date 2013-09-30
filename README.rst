@@ -35,7 +35,7 @@ Of course, you can also use it for another purpose (e.g. a Java powered PC appli
 
 .. note::
 
-    * :file:`FecReceiver.java` is the RTP / SMPTE 2022-1 FEC receiver.
+    * ``FecReceiver.java`` is the RTP / SMPTE 2022-1 FEC receiver.
 
 ForC_old
 --------
@@ -55,7 +55,7 @@ Compiling step by step
 ^^^^^^^^^^^^^^^^^^^^^^
 
 * install CodeBlocks_ and g++ with ``sudo apt-get install codeblocks g++`` ;
-* open file :file:`ForC_old/CodeBlocks/VLC-SMPTE.workspace` with CodeBlocks_ ;
+* open file ``ForC_old/CodeBlocks/VLC-SMPTE.workspace`` with CodeBlocks_ ;
 * double click on project **Smpte-2022-** in CodeBlocks_ IDE and Ctrl+F11 to compile ;
 * double click on project **FecGenerator**    in CodeBlocks_ IDE and Ctrl+F11 to compile ;
 * double click on project **ErrorsGenerator** in CodeBlocks_ IDE and Ctrl+F11 to compile ;
@@ -64,10 +64,10 @@ Compiling step by step
 Testing step by step
 ^^^^^^^^^^^^^^^^^^^^
 
-* open a terminal in path :file:`ForC_old/Release-linux64` ;
+* open a terminal in path ``ForC_old/Release-linux64`` ;
 * execute ``sh script_example.sh "source_file_name"`` ;
 * read logs of each module ;
-* compare ``*.raw`` output file (without any error recovery) and :file:`*.david` output file (recovered by SMPTE 2022-1 library) ;
+* compare ``*.raw`` output file (without any error recovery) and ``*.david`` output file (recovered by SMPTE 2022-1 library) ;
 * execute each module with different options :
    - like this : ``source_file -> FecGenerator -> FecDecoder -> results_files``
    - or like this : ``source_file -> FecGenerator -> ErrorsGenerator -> FecDecoder -> results_files``
