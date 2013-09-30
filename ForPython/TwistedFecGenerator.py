@@ -27,6 +27,8 @@
 #
 # Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 
+from __future__ import absolute_import
+
 import logging, socket
 from twisted.internet.protocol import DatagramProtocol
 from .FecGenerator import FecGenerator
@@ -44,7 +46,7 @@ class TwistedFecGenerator(DatagramProtocol):
 
     **Example usage**
 
-    >>> from IPSocket import IPSocket
+    >>> from .IPSocket import IPSocket
     >>> from twisted.internet import reactor
     >>> media = IPSocket(TwistedFecGenerator.DEFAULT_MEDIA)
     >>> col = IPSocket(TwistedFecGenerator.DEFAULT_COL)
@@ -174,8 +176,8 @@ class TwistedFecGenerator(DatagramProtocol):
         """
         import signal
         from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-        from IPSocket import IPSocket
         from twisted.internet import reactor
+        from .IPSocket import IPSocket
 
         HELP_MEDIA = u'Socket of input stream'
         HELP_COL   = u'Socket of generated FEC column stream'
@@ -259,8 +261,8 @@ class TwistedFecGenerator(DatagramProtocol):
 
 if __name__ == u'__main__':
     import doctest
+    from pyutils.encoding import configure_unicode
     from pyutils.logging import setup_logging
-    from pyutils.unicode import configure_unicode
     configure_unicode()
     setup_logging(name=u'smpte2022lib', filename=None, console=True, level=logging.DEBUG)
     log.info(u'Testing TwistedFecGenerator with doctest')

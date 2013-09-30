@@ -27,8 +27,10 @@
 #
 # Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 
+from __future__ import absolute_import
+
 import logging, socket, struct
-from pyutils.unicode import to_bytes
+from pyutils.encoding import to_bytes
 from .FecGenerator import FecGenerator
 from .RtpPacket import RtpPacket
 
@@ -43,7 +45,7 @@ class SocketFecGenerator(object):
 
     **Example usage**
 
-    >>> from IPSocket import IPSocket
+    >>> from .IPSocket import IPSocket
     >>> media = IPSocket(SocketFecGenerator.DEFAULT_MEDIA)
     >>> col = IPSocket(SocketFecGenerator.DEFAULT_COL)
     >>> row = IPSocket(SocketFecGenerator.DEFAULT_ROW)
@@ -211,7 +213,7 @@ class SocketFecGenerator(object):
         """
         import signal
         from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-        from IPSocket import IPSocket
+        from .IPSocket import IPSocket
 
         HELP_MEDIA   = u'Socket of input stream'
         HELP_COL     = u'Socket of generated FEC column stream'
@@ -242,8 +244,8 @@ class SocketFecGenerator(object):
 
 if __name__ == u'__main__':
     import doctest
+    from pyutils.encoding import configure_unicode
     from pyutils.logging import setup_logging
-    from pyutils.unicode import configure_unicode
     configure_unicode()
     setup_logging(name=u'smpte2022lib', filename=None, console=True, level=logging.DEBUG)
     log.info(u'Testing SocketFecGenerator with doctest')

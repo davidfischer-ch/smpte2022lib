@@ -28,9 +28,11 @@
 
 # FIXME error message is set in the constructor but it is not updated if packet become valid !
 
+from __future__ import absolute_import
+
 import struct
 from fastxor import fast_xor_inplace
-from pyutils.unicode import to_bytes
+from pyutils.encoding import to_bytes
 from .RtpPacket import RtpPacket
 
 class FecPacket(object):
@@ -238,7 +240,7 @@ class FecPacket(object):
 
         **Example usage**
 
-        >>> from RtpPacket import RtpPacket
+        >>> from .RtpPacket import RtpPacket
         >>> packets = [RtpPacket.create(10, 100, RtpPacket.MP2T_PT, bytearray(123)), \
                        RtpPacket.create(11, 200, RtpPacket.MP2T_PT, bytearray(1234))]
         >>> fec = FecPacket.compute(6, FecPacket.XOR, FecPacket.ROW, 2, 1, packets)
@@ -254,7 +256,7 @@ class FecPacket(object):
 
         **Example usage**
 
-        >>> from RtpPacket import RtpPacket
+        >>> from .RtpPacket import RtpPacket
         >>> packets = [RtpPacket.create(10, 100, RtpPacket.MP2T_PT, bytearray(123)), \
                        RtpPacket.create(11, 200, RtpPacket.MP2T_PT, bytearray(1234))]
         >>> fec = FecPacket.compute(1985, FecPacket.XOR, FecPacket.ROW, 2, 1, packets)
@@ -270,7 +272,7 @@ class FecPacket(object):
 
         **Example usage**
 
-        >>> from RtpPacket import RtpPacket
+        >>> from .RtpPacket import RtpPacket
         >>> packets = [RtpPacket.create(10, 100, RtpPacket.MP2T_PT, bytearray(123)), \
                        RtpPacket.create(11, 200, RtpPacket.MP2T_PT, bytearray(1234))]
         >>> fec = FecPacket.compute(27, FecPacket.XOR, FecPacket.ROW, 2, 1, packets)
@@ -286,7 +288,7 @@ class FecPacket(object):
 
         *Example usage*
 
-        >>> from RtpPacket import RtpPacket
+        >>> from .RtpPacket import RtpPacket
         >>> packets = [RtpPacket.create(10, 100, RtpPacket.MP2T_PT, bytearray(123)), \
                        RtpPacket.create(11, 200, RtpPacket.MP2T_PT, bytearray(1234))]
         >>> fec = FecPacket.compute(26, FecPacket.XOR, FecPacket.ROW, 2, 1, packets)
@@ -420,7 +422,7 @@ class FecPacket(object):
 
         Testing invalid input collection of packets:
 
-        >>> from RtpPacket import RtpPacket
+        >>> from .RtpPacket import RtpPacket
         >>> packets = [RtpPacket.create(10, 10, RtpPacket.MP2T_PT, u'a'), \
                        RtpPacket.create(22, 22, RtpPacket.MP2T_PT, u'b')]
         >>> fec = FecPacket.compute(1, FecPacket.XOR, FecPacket.COL, 2, 2, packets)
@@ -456,7 +458,7 @@ class FecPacket(object):
 
         >>> from os import urandom
         >>> from random import randint
-        >>> from RtpPacket import RtpPacket
+        >>> from .RtpPacket import RtpPacket
         >>> L = 4
         >>> D = 5
         >>> OFF = 2

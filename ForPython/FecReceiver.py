@@ -26,7 +26,9 @@
 #
 # Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 
-from pyutils.unicode import to_bytes
+from __future__ import absolute_import
+
+from pyutils.encoding import to_bytes
 from .FecPacket import FecPacket
 from .IPSocket import IPSocket
 from .RtpPacket import RtpPacket
@@ -57,7 +59,7 @@ class FecReceiver(object):
     >>> from io import BytesIO
     >>> from os import urandom
     >>> from random import randint
-    >>> from FecPacket import FecPacket
+    >>> from .FecPacket import FecPacket
     >>> output = BytesIO()
     >>> receiver = FecReceiver(output)
     >>> receiver.setDelay(1024, FecReceiver.PACKETS)

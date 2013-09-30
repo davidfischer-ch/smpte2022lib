@@ -26,6 +26,8 @@
 #
 # Retrieved from https://github.com/davidfischer-ch/smpte2022lib.git
 
+from __future__ import absolute_import
+
 import struct
 
 
