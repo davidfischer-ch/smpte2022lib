@@ -3,11 +3,13 @@
 .. _MinGW: http://www.mingw.org/
 .. _VLC: http://www.videolan.org/vlc/index.html
 
+============
 smpte2022lib
 ============
 
 Optimized and cross platform SMPTE 2022-1 FEC library in C, Python, Java.
 
+-----------------
 Brief description
 -----------------
 
@@ -17,6 +19,7 @@ Initial goal of the project was to help VLC and others to implement this FEC alg
 
 Nowadays I focus on using the newer Java and Python implementations for some Ra&D projects using RTP streams.
 
+---------
 ForPython
 ---------
 
@@ -24,6 +27,7 @@ I developed this version to generate SMPTE 2022-1 FEC streams from a sniffed RTP
 
 This implementation is now part of `pyutils <https://github.com/davidfischer-ch/pyutils/>`_ (see `commit <https://github.com/davidfischer-ch/pyutils/commit/c8346c939cf6a8791e92e4b7b3cc72e67c82d0da>`_).
 
+-------
 ForJava
 -------
 
@@ -37,6 +41,7 @@ Of course, you can also use it for another purpose (e.g. a Java powered PC appli
 
     * ``FecReceiver.java`` is the RTP / SMPTE 2022-1 FEC receiver.
 
+--------
 ForC_old
 --------
 
@@ -49,10 +54,10 @@ You can read the `resume <ForC_old/Documents/Resume.pdf>`_ of the project files 
 Don't hesitate to contact me to get further explanations.
 
 GNU/Linux (e.g. Ubuntu 64)
-++++++++++++++++++++++++++
+==========================
 
 Compiling step by step
-^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 
 * install CodeBlocks_ and g++ with ``sudo apt-get install codeblocks g++``
 * open file ``ForC_old/CodeBlocks/VLC-SMPTE.workspace`` with CodeBlocks_
@@ -62,7 +67,7 @@ Compiling step by step
 * double click on project **FecDecoder**      in CodeBlocks_ IDE and Ctrl+F11 to compile
 
 Testing step by step
-^^^^^^^^^^^^^^^^^^^^
+--------------------
 
 * open a terminal in path ``ForC_old/Release-linux64``
 * execute ``sh script_example.sh "source_file_name"``
@@ -73,18 +78,19 @@ Testing step by step
    - or like this : ``source_file -> FecGenerator -> ErrorsGenerator -> FecDecoder -> results_files``
 
 Windows (e.g. Windows XP 32)
-++++++++++++++++++++++++++++
+============================
 
 Compiling step by step
-^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 
 Steps are equivalent to GNU/Linux steps with some variations (CodeBlocks_ running under a MinGW_ environment).
 
 Testing step by step
-^^^^^^^^^^^^^^^^^^^^
+--------------------
 
 Steps are equivalent to GNU/Linux steps with some variations (scripts names and files extensions).
 
+----------
 ForVlc_old
 ----------
 
