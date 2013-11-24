@@ -25,7 +25,7 @@ ForPython
 
 I developed this version to generate SMPTE 2022-1 FEC streams from a sniffed RTP media stream.
 
-This implementation is now part of `pyutils <https://github.com/davidfischer-ch/pyutils/>`_ (see `commit <https://github.com/davidfischer-ch/pyutils/commit/c8346c939cf6a8791e92e4b7b3cc72e67c82d0da>`_).
+This implementation is now part of `pytoolbox <https://github.com/davidfischer-ch/pytoolbox/>`_ (see `commit <https://github.com/davidfischer-ch/pytoolbox/commit/c8346c939cf6a8791e92e4b7b3cc72e67c82d0da>`_).
 
 -------
 ForJava
