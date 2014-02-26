@@ -129,6 +129,7 @@ public class FecReceiver
 
 	// Statistics about lost medias
 	protected TreeMap<Integer, Integer> lostogram = new TreeMap<Integer, Integer>();
+	protected int lostogramCounter = 0;
 
 	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Constructors >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -518,7 +519,6 @@ public class FecReceiver
 		{
 			DelayUnits units = flushing ? DelayUnits.packets : delayUnits;
 			int        value = flushing ? 0                  : delayValue;
-			int missingCount = 0;
 
 			switch (units)
 			{
@@ -533,14 +533,22 @@ public class FecReceiver
 					RtpPacket media = medias.get(position);
 					if (media != null)
 					{
+						// Update the histogram of the lost packets and reset the counter
+						if (lostogram.containsKey(lostogramCounter))
+							lostogram.put(lostogramCounter, lostogram.get(lostogramCounter) + 1);
+						else
+							lostogram.put(lostogramCounter, 1);
+						lostogramCounter = 0;
+						// Remove the media of the buffer and output it
 						medias.remove(media.sequence);
 						if (outPayload != null) outPayload.write(media.payload);
 						if (outMedias  != null) outMedias.add(media);
 					}
 					else
 					{
+						// Increment the counters because another packet is missing ...
 						mediaMissing++;
-						missingCount++;
+						lostogramCounter++;
 					}
 
 					// Remove any fec packet linked to current media packet
@@ -611,10 +619,6 @@ public class FecReceiver
 				System.out.println("Unknown delay units : "+delayUnits);
 				break;
 			}
-			if (lostogram.containsKey(missingCount))
-				lostogram.put(missingCount, lostogram.get(missingCount) + 1);
-			else
-				lostogram.put(missingCount, 1);
 		} catch (IOException e)
 		{
 			System.out.println("Unable to write to output : "+Utils.getException(e));
